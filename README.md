@@ -21,7 +21,8 @@ Execution of Deoxyribose takes place on a closed circle of DNA (like the
 bacterial genome).
 Any amount of information can be placed before the first start codon, and if no
 stop codon is found, execution will loop around to the very beginning.
-Clever use of frameshifts and degeneracy can allow some very fun and exciting things.
+Clever use of the frameshifts this can lead to, combined with the degeneracy of
+the codon–amino acid correspondence, can allow some very fun and exciting things.
 
 ## Amino acids (operators)
 
@@ -30,17 +31,18 @@ follows.
 
 **Special codons:**
 * `ATG`: Start program execution. Everything before this codon is ignored, and
-  it is expected that the next codon will define the "block size" (see below)
+  it is expected that the next codon will define the "block size" (see below);
+  this codon also codes for methionine
 * `TAG`, `TAA`, and `TGA`: Stop; exit the program and return 0.
 
-**Charged amino acids --- Single-stack operations:**
+**Charged amino acids — Single-stack operations:**
 * **His**: Push next block (expressed in quaternary notation, see below) to the
   top of the main stack
 * **Lys**: Pop top of main stack to standard output as an integer
 * **Arg**: Pop top of main stack to standard output as a Unicode character
 * **Glu**: Duplicate top element of main stack
 
-**Non-polar amino acids --- Two-stack operations:**
+**Non-polar amino acids — Two-stack operations:**
 * **Leu**: Add the top elements of the main and auxiliary stack, remove these
   elements, and place the result on top of the main stack
 * **Ile**: Subtract the top element of the auxiliary stack from the top element
@@ -61,7 +63,7 @@ follows.
   stack (*Aspartic acid is actually a charged amino acid, and shouldn't really be
   in this section*)
 
-**Polar amino acids --- Flow control**
+**Polar amino acids — Flow control**
 * **Ser**: If the top elements of the stacks are equal, jump to the next **Thr**
 * **Tyr**: If the main stack is empty, jump to the next **Gln**
 * **Asn**: Jump backwards to the previous **Cys**
@@ -79,13 +81,14 @@ C = 1, G = 2, and T = 3."
 
 This is also where the block size comes in. The block size is a 3-digit base-4
 number, expressed as described above, that specifies how many codons are in a
-block. For example, a block size of `AAC` allows numbers up to `4\*\*3 - 1` (63) to be
-represented as integer literals, `AAG` up to `4\*\*6 - 1` (4095), and `TTT` up
-to `4\*\*189 - 1` (~6E113). But choosing a larger block size means typing more
+block. For example, a block size of `AAC` allows numbers up to `4**3 - 1` (63) to be
+represented as integer literals, `AAG` up to `4**6 - 1` (4095), and `TTT` up
+to `4**189 - 1` (~6E113). But choosing a larger block size means typing more
 every time you want a number, so choose the balance carefully.
 
 Once stored inside the stack, values are not subject to these same limits, and
-are treated just like ordinary Python integers.
+are treated just like ordinary Python integers. Negative integers can therefore
+be constructed by subtracting a natural number from zero.
 
 Unicode characters can be stored as their character reference, and converted
 back by arginine. There is no built-in string datatype, only chars ordered on
@@ -205,7 +208,7 @@ AAA Lys     Pop top element of main stack as int
 TAG Stop
 ```
 
-### Notes etc.
+## Notes etc.
 
 This is very much a work in progress, and there are some very poor aspects of the
 design that will likely be changed in backwards-incompatible ways in future
