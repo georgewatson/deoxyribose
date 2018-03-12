@@ -64,7 +64,7 @@ follows.
   in this section*)
 
 **Polar amino acids — Flow control**
-* **Ser**: If the top elements of the stacks are equal, jump to the next **Thr**
+* **Ser**: If the top element of the main stack is less than or equal to zero, jump to the next **Thr**
 * **Tyr**: If the main stack is empty, jump to the next **Gln**
 * **Asn**: Jump backwards to the previous **Cys**
 
