@@ -97,9 +97,9 @@ def val(pointer, main_stack, aux_stack):
 def ser(pointer, main_stack, aux_stack):
     """
     Ser
-    If the top elements are equal, jump to next Thr.
+    If the top element of the main stack is <= 0, jump to next Thr.
     """
-    if main_stack[-1] == aux_stack[-1]:
+    if main_stack[-1] <= 0:
         results = []
         for term in ["act", "acc", "aca", "acg"]:
             result, success = look_ahead(pointer, term)
