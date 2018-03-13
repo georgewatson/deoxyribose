@@ -99,18 +99,6 @@ the stack.
 
 ## Examples
 
-**Note:** Some of these examples are out of date and rely on changed or removed
-language features from previous working versions of the specification.
-Conversely, some probably have more elegant implementations in the latest
-specification.
-The examples will probably be updated at some point, but the following examples
-are known to work in the latest version of the official interpreter:
-
-* Hello, world! (although the complete source code is not listed here, so this
-  version prints only `Hd!`)
-* Infinite Fibonacci sequence
-* Cat
-
 ### Hello, world!
 `ATGAAG CATAAAGAC CACAACGCA...CATAACAGA TGTAGATATAATCAA TAG`
 (117 B)
@@ -191,36 +179,39 @@ CAA
 TAG Stop
 ```
 
-### Integers from 1 to N
-`ATGAAC GATCATAAC TGT GAAAAACATAACGATTTA AGTAATACT GAAAAA TAG`
-(54 B)
+### Print integers from 1 to N
+`ATGAAC GGTCATAAC TGTGAAAAACATAACGGTTTATTTGAAGGTGGT GAAATTAGT TAG ACTGATAAT`
+(69 B)
 
 ```
 ATG Start
 AAC Block size = 1
 
-GAT Asp     Move top element of main to aux
-
+GGT Gly     Move top element of main stack to aux stack
 CAT His     Push next block
-AAC 001     Numeric literal 1
+AAC 001     Number 1
 
 TGT Cys     Destination of Asn
-
 GAA Glu     Duplicate top element of main stack
 AAA Lys     Pop top element of main stack as int
 CAT His     Push next block
-AAC 001     Numeric literal 1
-GAT Asp     Move top element of main to aux
+AAC 001     Number 1
+GGT Gly     Move top element of main stack to aux stack
 TTA Leu     Add top elements
-
-AGT Ser     If top elements are equal, jump to next Thr
-AAT Asn     Jump back to Cys
-ACT Thr     Destination of Ser
+TTT Phe     Put aux stack on top of main stack
+GAA Glu     Duplicate top element of main stack
+GGT Gly     Move top element of main stack to aux stack
+GGT Gly     Move top element of main stack to aux stack
 
 GAA Glu     Duplicate top element of main stack
-AAA Lys     Pop top element of main stack as int
+ATT Ile     Subtract top of aux stack from top of main stack
+AGT Ser     If top element of main stack is <= 0, jump to next Thr
 
 TAG Stop
+
+ACT Thr     Destination of Ser
+GAT Asp     Drop the top element of the main stack
+AAT Asn     Jump back to Cys
 ```
 
 ## Notes etc.
