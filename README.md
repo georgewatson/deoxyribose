@@ -87,8 +87,11 @@ to `4**189 - 1` (~6E113). But choosing a larger block size means typing more
 every time you want a number, so choose the balance carefully.
 
 Once stored inside the stack, values are not subject to these same limits, and
-are treated just like ordinary Python integers. Negative integers can therefore
-be constructed by subtracting a natural number from zero.
+are treated just like ordinary Python integers (which can't handle numbers as
+large as the notation described above theoretically supports; this is a
+shortcoming of the current implementation of the interpreter, not the language).
+Negative integers can therefore be constructed by subtracting a natural number
+from zero.
 
 Unicode characters can be stored as their character reference, and converted
 back by arginine. There is no built-in string datatype, only chars ordered on
@@ -138,7 +141,7 @@ TAG Stop
 ```
 
 ### Infinite Fibonacci sequence
-`ATGAAC CATAACGAA GAT TGTGAATTAGGTATGGAAAAAAAT`
+`ATGAAC CATAACGAA GGT TGTGAATTAGGTATGGAAAAAAAT`
 (42 B)
 
 ```
@@ -149,7 +152,7 @@ CAT His     Push next block
 AAC 001     Numeric literal 1
 GAA Glu     Duplicate top element of main stack
 
-GAT Asp     Move main top to aux
+GGT Gly     Move main top to aux
 
 TGT Cys     Destination of Asn
 GAA Glu     Duplicate top element of main stack

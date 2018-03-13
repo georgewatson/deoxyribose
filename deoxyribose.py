@@ -401,7 +401,12 @@ GENETIC_CODE = {
     "gag": glu,
 
     "ttt": phe,
-    "ttc": phe
+    "ttc": phe,
+
+    "ggt": gly,
+    "ggc": gly,
+    "gga": gly,
+    "ggg": gly
 }
 
 
