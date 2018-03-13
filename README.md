@@ -51,9 +51,9 @@ follows.
   main stack
 * **Val**: Multiply the top elements of the main and auxiliary stack, remove these
   elements, and place the result on top of the main stack
-* **Pro**: Floor-divide the top element of the main stack by the top element
-  of the auxiliary stack, remove these elements, and place the result on top of the
-  main stack
+* **Pro**: Divide the top element of the main stack by the top element
+  of the auxiliary stack, round the result towards zero, remove these elements,
+  and place the result on top of the main stack
 * **Met**: Swap the top elements of the main and auxiliary stacks
 * **Phe**: Put the auxiliary stack on top of the main stack, clearing the
   auxiliary stack

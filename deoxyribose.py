@@ -113,7 +113,8 @@ def ser(pointer, main_stack, aux_stack):
 def pro(pointer, main_stack, aux_stack):
     """
     Pro
-    Floor-divide the top of the main stack by the top of the aux stack.
+    Divide the top of the main stack by the top of the aux stack.
+    Result is rounded towards zero if not an integer.
     Place the result in the main stack.
     If either stack is empty, treat it as one.
     """
@@ -126,7 +127,7 @@ def pro(pointer, main_stack, aux_stack):
         b = int(aux_stack.pop())
     else:
         b = 1
-    main_stack.append(a // b)
+    main_stack.append(int(a / b))
     return(pointer, main_stack, aux_stack)
 
 
