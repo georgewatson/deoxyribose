@@ -470,7 +470,6 @@ BLOCK_SIZE = 1
 # Get code, keeping only A, C, G, and T characters
 if len(sys.argv) > 1:
     CHROMOSOME = re.sub('[^acgt]', '', sys.argv[1].lower())
-
     # Run interpreter
     main()
 else:
@@ -478,6 +477,5 @@ else:
     while True:
         USER_INPUT = input()
         CHROMOSOME = re.sub('[^acgt]', '', USER_INPUT.lower())
-
         # Run interpreter
         main()

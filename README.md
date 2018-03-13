@@ -54,14 +54,15 @@ follows.
 * **Pro**: Floor-divide the top element of the main stack by the top element
   of the auxiliary stack, remove these elements, and place the result on top of the
   main stack
-* **Ala**: Calculate the top element of the main stack modulo the top element
-  of the auxiliary stack, remove these elements, and place the result on top of the
-  main stack
 * **Met**: Swap the top elements of the main and auxiliary stacks
 * **Phe**: Put the auxiliary stack on top of the main stack, clearing the
   auxiliary stack
 * **Gly**: Move the top element of the main stack to the top of the auxiliary
   stack
+* ~~**Ala**: Calculate the top element of the main stack modulo the top element
+  of the auxiliary stack, remove these elements, and place the result on top of the
+  main stack~~ (*deprecated; likely to be removed in future versions; use of Pro
+  and Ile to replicate functionality is recommended*)
 
 **Polar amino acids — Flow control**
 * **Ser**: If the top element of the main stack is less than or equal to zero, jump to the next **Thr**
