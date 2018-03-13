@@ -108,6 +108,8 @@ are known to work in the latest version of the official interpreter:
 
 * Hello, world! (although the complete source code is not listed here, so this
   version prints only `Hd!`)
+* Infinite Fibonacci sequence
+* Cat
 
 ### Hello, world!
 `ATGAAG CATAAAGAC CACAACGCA...CATAACAGA TGTAGATATAATCAA TAG`
