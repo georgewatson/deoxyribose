@@ -227,6 +227,16 @@ def arg(pointer, main_stack, aux_stack):
 def asp(pointer, main_stack, aux_stack):
     """
     Asp
+    If the main stack is non-empty, drop the top element.
+    """
+    if main_stack:
+        main_stack = main_stack[:-1]
+    return(pointer, main_stack, aux_stack)
+
+
+def gly(pointer, main_stack, aux_stack):
+    """
+    Gly
     If the main stack is non-empty, move the top element to the aux stack.
     """
     if main_stack:

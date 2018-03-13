@@ -41,6 +41,7 @@ follows.
 * **Lys**: Pop top of main stack to standard output as an integer
 * **Arg**: Pop top of main stack to standard output as a Unicode character
 * **Glu**: Duplicate top element of main stack
+* **Asp**: Drop the top element of the main stack
 
 **Non-polar amino acids — Two-stack operations:**
 * **Leu**: Add the top elements of the main and auxiliary stack, remove these
@@ -59,9 +60,8 @@ follows.
 * **Met**: Swap the top elements of the main and auxiliary stacks
 * **Phe**: Put the auxiliary stack on top of the main stack, clearing the
   auxiliary stack
-* **Asp**: Move the top element of the main stack to the top of the auxiliary
-  stack (*Aspartic acid is actually a charged amino acid, and shouldn't really be
-  in this section*)
+* **Gly**: Move the top element of the main stack to the top of the auxiliary
+  stack
 
 **Polar amino acids — Flow control**
 * **Ser**: If the top element of the main stack is less than or equal to zero, jump to the next **Thr**
@@ -96,8 +96,18 @@ the stack.
 
 ## Examples
 
+**Note:** Some of these examples are out of date and rely on changed or removed
+language features from previous working versions of the specification.
+Conversely, some probably have more elegant implementations in the latest
+specification.
+The examples will probably be updated at some point, but the following examples
+are known to work in the latest version of the official interpreter:
+
+* Hello, world! (although the complete source code is not listed here, so this
+  version prints only `Hd!`)
+
 ### Hello, world!
-`ATGACGAAGAAACATAAAGACCACAACGCA...CATAACAGATGTAGATATAATCAATAG`
+`ATGAAG CATAAAGAC CACAACGCA...CATAACAGA TGTAGATATAATCAA TAG`
 (117 B)
 
 ```
@@ -128,7 +138,7 @@ TAG Stop
 ```
 
 ### Infinite Fibonacci sequence
-`ATGAACCATAACGAAGATTGTGAATTAGATATGGAAAAAAAT`
+`ATGAAC CATAACGAA GAT TGTGAATTAGGTATGGAAAAAAAT`
 (42 B)
 
 ```
@@ -144,7 +154,7 @@ GAT Asp     Move main top to aux
 TGT Cys     Destination of Asn
 GAA Glu     Duplicate top element of main stack
 TTA Leu     Add top elements of stacks
-GAT Asp     Move main top to aux
+GGT Gly     Move main top to aux
 ATG Met     Swap top elements
 GAA Glu     Duplicate top element of main stack
 AAA Lys     Pop top element of main stack as int
@@ -152,7 +162,7 @@ AAT Asn     Jump back to Cys
 ```
 
 ### Cat
-`ATGAACTGTGATTATAATCAATTTTGTAGATATAATCAATAG`
+`ATGAAC TGTGGTTATAATCAA TTT TGTAGATATAATCAA TAG`
 (42 B)
 
 ```
@@ -160,7 +170,7 @@ ATG Start
 AAC Block size = 1
 
 TGT Cys     Destination of Asn
-GAT Asp     Move top element of main stack to aux stack
+GGT Gly     Move top element of main stack to aux stack
 TAT Tyr     If the stack is empty, jump to next Gln
 AAT Asn     Jump back to Cys
 CAA Gln     Destination for Tyr
