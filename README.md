@@ -220,7 +220,8 @@ This is very much a work in progress, and there are some very poor aspects of th
 design that will likely be changed in backwards-incompatible ways in future
 versions. I would welcome suggestions.
 
-The specification and documentation for this project are under a
-[CC-BY](https://creativecommons.org/licenses/by/3.0) licence, and the
-interpreter etc. are under an MIT licence. I'd love to see them developed and
-improved upon, but it would be nice to see my name on there somewhere.
+The specification and documentation for this project are dual-licensed under a
+[CC-BY](https://creativecommons.org/licenses/by/3.0) licence and the MIT licence
+(see the `LICENSE` file), and the interpreter etc. are under an MIT licence.
+I'd love to see them developed and improved upon, but it would be nice to see my
+name on there somewhere.
