@@ -1,7 +1,7 @@
 # Deoxyribose
 The DNA-themed programming language all the kids are talking about
 
-# Introducing Deoxyribose
+## Introducing Deoxyribose
 
 Deoxyribose is a stack-based esoteric programming language based on the syntax
 and function of DNA.
@@ -29,7 +29,7 @@ the codon–amino acid correspondence, can allow some very fun and exciting thin
 The operators are defined by their correspondence to particular amino acids, as
 follows.
 
-**Special codons:**
+### Special codons:
 * `ATG`: Start program execution. Everything before this codon is ignored, and
   it is expected that the next codon will define the "block size" (see below);
   this codon also codes for methionine
@@ -43,7 +43,7 @@ follows.
 * **Glu**: Duplicate top element of main stack
 * **Asp**: Drop the top element of the main stack
 
-**Non-polar amino acids — Two-stack operations:**
+### Non-polar amino acids — Two-stack operations:
 * **Leu**: Add the top elements of the main and auxiliary stack, remove these
   elements, and place the result on top of the main stack
 * **Ile**: Subtract the top element of the auxiliary stack from the top element
@@ -64,7 +64,7 @@ follows.
   main stack~~ (*deprecated; likely to be removed in future versions; use of Pro
   and Ile to replicate functionality is recommended*)
 
-**Polar amino acids — Flow control**
+### Polar amino acids — Flow control
 * **Ser**: If the top element of the main stack is less than or equal to zero, jump to the next **Thr**
 * **Tyr**: If the main stack is empty, jump to the next **Gln**
 * **Asn**: Jump backwards to the previous **Cys**
