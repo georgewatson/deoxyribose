@@ -13,6 +13,75 @@ import sys
 import re
 
 
+def stop(pointer, main_stack, aux_stack):
+    """
+    Stop
+    Terminate execution.
+    """
+    sys.exit(0)
+
+
+# Charged amino acids: Single-stack operations
+
+
+def his(pointer, main_stack, aux_stack):
+    """
+    His
+    Treat next block as an integer literal in quaternary notation.
+    Push the value to the main stack.
+    """
+    block = ""
+    for _ in range(BLOCK_SIZE):
+        codon, pointer = read_next_codon(pointer)
+        block += codon
+    main_stack.append(block_to_int(block))
+    return(pointer, main_stack, aux_stack)
+
+
+def lys(pointer, main_stack, aux_stack):
+    """
+    Lys
+    If the main stack is non-empty, pop the top element as an integer.
+    """
+    # If the stack is empty, do nothing
+    if main_stack:
+        print(main_stack.pop())
+    return(pointer, main_stack, aux_stack)
+
+
+def arg(pointer, main_stack, aux_stack):
+    """
+    Arg
+    If the main stack is non-empty, pop the top element as a Unicode character.
+    """
+    if main_stack:
+        sys.stdout.write(str(chr(int(main_stack.pop()))))
+    return(pointer, main_stack, aux_stack)
+
+
+def glu(pointer, main_stack, aux_stack):
+    """
+    Glu
+    If the main stack is non-empty, duplicate the top element.
+    """
+    if main_stack:
+        main_stack.append(main_stack[-1])
+    return(pointer, main_stack, aux_stack)
+
+
+def asp(pointer, main_stack, aux_stack):
+    """
+    Asp
+    If the main stack is non-empty, drop the top element.
+    """
+    if main_stack:
+        main_stack = main_stack[:-1]
+    return(pointer, main_stack, aux_stack)
+
+
+# Non-polar amino acids: Two-stack operations
+
+
 def leu(pointer, main_stack, aux_stack):
     """
     Leu
@@ -53,27 +122,6 @@ def ile(pointer, main_stack, aux_stack):
     return(pointer, main_stack, aux_stack)
 
 
-def met(pointer, main_stack, aux_stack):
-    """
-    Met
-    Swap the top elements of the two stacks.
-    Gracefully handles empty stacks.
-    """
-    # If either list is empty, just move one way
-    # If both are empty, do nothing
-    if main_stack:
-        a = main_stack.pop()
-    else:
-        a = []
-    if aux_stack:
-        b = aux_stack.pop()
-    else:
-        b = []
-    aux_stack.append(a)
-    main_stack.append(b)
-    return(pointer, main_stack, aux_stack)
-
-
 def val(pointer, main_stack, aux_stack):
     """
     Val
@@ -91,22 +139,6 @@ def val(pointer, main_stack, aux_stack):
     else:
         b = 1
     main_stack.append(a * b)
-    return(pointer, main_stack, aux_stack)
-
-
-def ser(pointer, main_stack, aux_stack):
-    """
-    Ser
-    If the top element of the main stack is <= 0, jump to next Thr.
-    """
-    if main_stack[-1] <= 0:
-        results = []
-        for term in ["act", "acc", "aca", "acg"]:
-            result, success = look_ahead(pointer, term)
-            if success:
-                results.append(result - pointer)
-        if results:
-            pointer += min(results) + 1
     return(pointer, main_stack, aux_stack)
 
 
@@ -131,9 +163,50 @@ def pro(pointer, main_stack, aux_stack):
     return(pointer, main_stack, aux_stack)
 
 
+def met(pointer, main_stack, aux_stack):
+    """
+    Met
+    Swap the top elements of the two stacks.
+    Gracefully handles empty stacks.
+    """
+    # If either list is empty, just move one way
+    # If both are empty, do nothing
+    if main_stack:
+        a = main_stack.pop()
+    else:
+        a = []
+    if aux_stack:
+        b = aux_stack.pop()
+    else:
+        b = []
+    aux_stack.append(a)
+    main_stack.append(b)
+    return(pointer, main_stack, aux_stack)
+
+
+def phe(pointer, main_stack, aux_stack):
+    """
+    Phe
+    Put aux stack on top of main stack, preserving its order
+    """
+    main_stack += aux_stack
+    aux_stack = []
+    return(pointer, main_stack, aux_stack)
+
+
+def gly(pointer, main_stack, aux_stack):
+    """
+    Gly
+    If the main stack is non-empty, move the top element to the aux stack.
+    """
+    if main_stack:
+        aux_stack.append(main_stack.pop())
+    return(pointer, main_stack, aux_stack)
+
+
 def ala(pointer, main_stack, aux_stack):
     """
-    Ala
+    Ala (DEPRECATED)
     Calculate main top modulo aux top.
     Place the result in the main stack.
     If either stack is empty, treat it as zero.
@@ -148,6 +221,25 @@ def ala(pointer, main_stack, aux_stack):
     else:
         b = 0
     main_stack.append(a % b)
+    return(pointer, main_stack, aux_stack)
+
+
+# Polar amino acids: Flow control
+
+
+def ser(pointer, main_stack, aux_stack):
+    """
+    Ser
+    If the top element of the main stack is <= 0, jump to next Thr.
+    """
+    if main_stack[-1] <= 0:
+        results = []
+        for term in ["act", "acc", "aca", "acg"]:
+            result, success = look_ahead(pointer, term)
+            if success:
+                results.append(result - pointer)
+        if results:
+            pointer += min(results) + 1
     return(pointer, main_stack, aux_stack)
 
 
@@ -167,28 +259,6 @@ def tyr(pointer, main_stack, aux_stack):
     return(pointer, main_stack, aux_stack)
 
 
-def stop(pointer, main_stack, aux_stack):
-    """
-    Stop
-    Terminate execution.
-    """
-    sys.exit(0)
-
-
-def his(pointer, main_stack, aux_stack):
-    """
-    His
-    Treat next block as an integer literal in quaternary notation.
-    Push the value to the main stack.
-    """
-    block = ""
-    for _ in range(BLOCK_SIZE):
-        codon, pointer = read_next_codon(pointer)
-        block += codon
-    main_stack.append(block_to_int(block))
-    return(pointer, main_stack, aux_stack)
-
-
 def asn(pointer, main_stack, aux_stack):
     """
     Asn
@@ -204,65 +274,7 @@ def asn(pointer, main_stack, aux_stack):
     return(pointer, main_stack, aux_stack)
 
 
-def lys(pointer, main_stack, aux_stack):
-    """
-    Lys
-    If the main stack is non-empty, pop the top element as an integer.
-    """
-    # If the stack is empty, do nothing
-    if main_stack:
-        print(main_stack.pop())
-    return(pointer, main_stack, aux_stack)
-
-
-def arg(pointer, main_stack, aux_stack):
-    """
-    Arg
-    If the main stack is non-empty, pop the top element as a Unicode character.
-    """
-    if main_stack:
-        sys.stdout.write(str(chr(int(main_stack.pop()))))
-    return(pointer, main_stack, aux_stack)
-
-
-def asp(pointer, main_stack, aux_stack):
-    """
-    Asp
-    If the main stack is non-empty, drop the top element.
-    """
-    if main_stack:
-        main_stack = main_stack[:-1]
-    return(pointer, main_stack, aux_stack)
-
-
-def gly(pointer, main_stack, aux_stack):
-    """
-    Gly
-    If the main stack is non-empty, move the top element to the aux stack.
-    """
-    if main_stack:
-        aux_stack.append(main_stack.pop())
-    return(pointer, main_stack, aux_stack)
-
-
-def glu(pointer, main_stack, aux_stack):
-    """
-    Glu
-    If the main stack is non-empty, duplicate the top element.
-    """
-    if main_stack:
-        main_stack.append(main_stack[-1])
-    return(pointer, main_stack, aux_stack)
-
-
-def phe(pointer, main_stack, aux_stack):
-    """
-    Phe
-    Put aux stack on top of main stack, preserving its order
-    """
-    main_stack += aux_stack
-    aux_stack = []
-    return(pointer, main_stack, aux_stack)
+# Helper functions
 
 
 def block_to_int(block):
@@ -282,9 +294,6 @@ def block_to_int(block):
             value += 2 * (4**i)
         elif char == 't':
             value += 3 * (4**i)
-        else:
-            sys.stderr.write("Mutation: Block ", block,
-                             " contains invalid character ", char)
 
     return value
 
@@ -334,7 +343,35 @@ def look_back(pointer, search_term):
     return(pointer, False)
 
 
+# Define genetic code table
 GENETIC_CODE = {
+    "taa": stop,  # ochre
+    "tag": stop,  # amber
+    "tga": stop,  # opal
+
+    # Charged amino acids: Single-stack operations
+
+    "cat": his,
+    "cac": his,
+
+    "aaa": lys,
+    "aag": lys,
+
+    "cgt": arg,
+    "cgc": arg,
+    "cga": arg,
+    "cgg": arg,
+    "aga": arg,
+    "agg": arg,
+
+    "gaa": glu,
+    "gag": glu,
+
+    "gat": asp,
+    "gac": asp,
+
+    # Non-polar amino acids: Two-stack operations
+
     "tta": leu,
     "ttg": leu,
     "ctt": leu,
@@ -346,12 +383,32 @@ GENETIC_CODE = {
     "atc": ile,
     "ata": ile,
 
-    "atg": met,
-
     "gtt": val,
     "gtc": val,
     "gta": val,
     "gtg": val,
+
+    "cct": pro,
+    "ccc": pro,
+    "cca": pro,
+    "ccg": pro,
+
+    "atg": met,
+
+    "ttt": phe,
+    "ttc": phe,
+
+    "ggt": gly,
+    "ggc": gly,
+    "gga": gly,
+    "ggg": gly,
+
+    "gct": ala,  # Note:
+    "gcc": ala,  # Ala is deprecated
+    "gca": ala,  #
+    "gcg": ala,  #
+
+    # Polar amino acids: Flow control
 
     "tct": ser,
     "tcc": ser,
@@ -360,55 +417,15 @@ GENETIC_CODE = {
     "agt": ser,
     "agc": ser,
 
-    "cct": pro,
-    "ccc": pro,
-    "cca": pro,
-    "ccg": pro,
-
-    "gct": ala,
-    "gcc": ala,
-    "gca": ala,
-    "gcg": ala,
-
     "tat": tyr,
     "tac": tyr,
 
-    "taa": stop,  # ochre
-
-    "tag": stop,  # amber
-
-    "cat": his,
-    "cac": his,
-
     "aat": asn,
     "aac": asn,
-
-    "aaa": lys,
-    "aag": lys,
-
-    "tga": stop,  # opal
-
-    "cgt": arg,
-    "cgc": arg,
-    "cga": arg,
-    "cgg": arg,
-    "aga": arg,
-    "agg": arg,
-
-    "gat": asp,
-    "gac": asp,
-
-    "gaa": glu,
-    "gag": glu,
-
-    "ttt": phe,
-    "ttc": phe,
-
-    "ggt": gly,
-    "ggc": gly,
-    "gga": gly,
-    "ggg": gly
 }
+
+
+# Main
 
 
 def main():
