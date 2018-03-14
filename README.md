@@ -29,13 +29,13 @@ the codon–amino acid correspondence, can allow some very fun and exciting thin
 The operators are defined by their correspondence to particular amino acids, as
 follows.
 
-### Special codons:
+### Special codons
 * `ATG`: Start program execution. Everything before this codon is ignored, and
   it is expected that the next codon will define the "block size" (see below);
   this codon also codes for methionine
 * `TAG`, `TAA`, and `TGA`: Stop; exit the program and return 0.
 
-### Charged amino acids — Single-stack operations:
+### Charged amino acids — Single-stack operations
 * **His**: Push next block (expressed in quaternary notation, see below) to the
   top of the main stack
 * **Lys**: Pop top of main stack to standard output as an integer
@@ -43,7 +43,7 @@ follows.
 * **Glu**: Duplicate top element of main stack
 * **Asp**: Drop the top element of the main stack
 
-### Non-polar amino acids — Two-stack operations:
+### Non-polar amino acids — Two-stack operations
 * **Leu**: Add the top elements of the main and auxiliary stack, remove these
   elements, and place the result on top of the main stack
 * **Ile**: Subtract the top element of the auxiliary stack from the top element
@@ -65,7 +65,8 @@ follows.
   and Ile to replicate functionality is recommended*)
 
 ### Polar amino acids — Flow control
-* **Ser**: If the top element of the main stack is less than or equal to zero, jump to the next **Thr**
+* **Ser**: If the top element of the main stack is less than or equal to zero,
+  jump to the next **Thr**
 * **Tyr**: If the main stack is empty, jump to the next **Gln**
 * **Asn**: Jump backwards to the previous **Cys**
 
@@ -214,6 +215,53 @@ ACT Thr     Destination of Ser
 GAT Asp     Drop the top element of the main stack
 AAT Asn     Jump back to Cys
 ```
+
+### Truth machine
+`ATGAAC TCT TGTCATAACAAGAAT ACTTAG`
+(30 B)
+```
+ATG Start
+AAC Block size = 1
+
+TCT Ser     If top element of main stack is <= 0, jump to Thr
+
+TGT Cys     Destination of Asn
+CAT His     Push next block to main stack
+AAC 1
+AAG Lys     Pop top block of main stack as int
+AAT Asn     Jump back to Cys
+
+ACT Thr     Destination of Ser
+TAG Stop
+```
+
+Note that the code
+`ATGAAC TCT TGTCATAACAAAAAT ACTTAG`
+(30 B)
+```
+ATG Start
+AAC Block size = 1
+
+TCT Ser     If top element of main stack is <= 0, jump to Thr
+
+TGT Cys     Destination of Asn
+CAT His     Push next block to main stack
+AAC 1
+AAA Lys     Pop top block of main stack as int
+AAT Asn     Jump back to Cys
+
+ACT Thr     Destination of Ser
+TAG Stop
+```
+(which is identical except that lysine is represented by AAA instead of AAG)
+does not work as expected, outputting a single `0` before terminating.
+
+This is because the `ACA` formed by the numeric literal 1 and
+the following Lys is recognised as the destination of the Ser → Thr jump, then
+the frame-shifted `AAA` immediately following is interpreted as a Lysine; the code
+then runs through a series of other operations (Ile, Leu, Arg) before looping
+back to the start and terminating on the `TGA` formed by the start and block
+size codons.
 
 ## Notes etc.
 
