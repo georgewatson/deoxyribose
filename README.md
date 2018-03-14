@@ -217,8 +217,8 @@ AAT Asn     Jump back to Cys
 ```
 
 ### Truth machine
-`ATGAAC TCT TGTCATAACAAGAAT ACTTAG`
-(30 B)
+`ATGAAC TCT TGTGAAAAAAAT ACTTAG`
+(27 B)
 ```
 ATG Start
 AAC Block size = 1
@@ -226,9 +226,8 @@ AAC Block size = 1
 TCT Ser     If top element of main stack is <= 0, jump to Thr
 
 TGT Cys     Destination of Asn
-CAT His     Push next block to main stack
-AAC 1
-AAG Lys     Pop top block of main stack as int
+GAA Glu     Duplicate top block of main stack
+AAA Lys     Pop top block of main stack as int
 AAT Asn     Jump back to Cys
 
 ACT Thr     Destination of Ser
@@ -253,7 +252,6 @@ AAT Asn     Jump back to Cys
 ACT Thr     Destination of Ser
 TAG Stop
 ```
-(which is identical except that lysine is represented by AAA instead of AAG)
 does not work as expected, outputting a single `0` before terminating.
 
 This is because the `ACA` formed by the numeric literal 1 and
