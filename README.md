@@ -35,7 +35,7 @@ follows.
   this codon also codes for methionine
 * `TAG`, `TAA`, and `TGA`: Stop; exit the program and return 0.
 
-**Charged amino acids — Single-stack operations:**
+### Charged amino acids — Single-stack operations:
 * **His**: Push next block (expressed in quaternary notation, see below) to the
   top of the main stack
 * **Lys**: Pop top of main stack to standard output as an integer
