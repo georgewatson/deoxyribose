@@ -209,7 +209,8 @@ def ala(pointer, main_stack, aux_stack):
     Ala (DEPRECATED)
     Calculate main top modulo aux top.
     Place the result in the main stack.
-    If either stack is empty, treat it as zero.
+    If the main stack is empty, treat it as zero.
+    If the aux stack is empty, treat it as one.
     """
     # If either list is empty, treat it as zero
     if main_stack:
@@ -219,7 +220,7 @@ def ala(pointer, main_stack, aux_stack):
     if aux_stack:
         b = int(aux_stack.pop())
     else:
-        b = 0
+        b = 1
     main_stack.append(a % b)
     return(pointer, main_stack, aux_stack)
 

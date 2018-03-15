@@ -303,8 +303,8 @@ subtracting 2 from 3).
 This makes life more fun.
 
 ### Primality test
-`ATGAAC GAACATAAG TGT GAAGGTGGT CCT TTTGAAGGAGGA GTT GGAGAA ATT CATAATCATAAGGGTATTGGT AGT GAT GAATTTGGTTTA AAT ACT GATTTTGATGGTATT AGT CATAAAAAATAG ACT CATAACAA`
-(140 B)
+`ATGAAC GAACATAAG TGT GAAGGTGGT CCT TTTGAAGGAGGA GTT GGAGAA ATT CATAACGGT AGT GAT GAATTTGGTTTA AAT ACT GATTTTGATGGTATT AGT CATAAAAAATAG ACT CATAACAA`
+(128 B)
 
 Accepts one integer as input; prints 1 if prime, 0 if composite.
 
@@ -337,11 +337,7 @@ GAA Glu     Duplicate
 ATT Ile     Subtract
 
 CAT His     Push
-AAT 3
-CAT His     Push
-AAG 2
-GGT Gly     Move
-ATT Ile     Subtract
+AAC 1
 GGT Gly     Move
 
 AGT Ser     If <= 0, jump to Thr
