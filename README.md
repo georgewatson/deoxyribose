@@ -144,11 +144,11 @@ TAG Stop
 ```
 
 ### Infinite Fibonacci sequence
-`ATGAAC CATAACGAA GGT TGTGAATTAGGTATGGAAAAAAAT`
-(42 B)
+`ATGAAC CATAACGAA GGT TGTGAATTAGGTATGGAAAAAA`
+(40 B)
 
 ```
-ATG Start
+ATG Start                       .AT Asn     Jump back to Cys
 AAC Block size = 1
 
 CAT His     Push
@@ -164,16 +164,16 @@ GGT Gly     Move
 ATG Met     Swap
 GAA Glu     Duplicate
 AAA Lys     Pop as int
-AAT Asn     Jump back to Cys
+A..         ...loop to start
 ```
 
 ### Cat
-`ATGAAC TGTGGTTATAATCAA TTT TGTAGATATAATCAA TAG`
-(42 B)
+`ATGAAC TGTGGTTATAATCAA TTT TGTAGATATAATCA`
+(38 B)
 
 ```
-ATG Start
-AAC Block size = 1
+ATG Start                                       ..A Gln     Destination of Tyr
+AAC Block size = 1                              TGA Stop
 
 TGT Cys     Destination of Asn
 GGT Gly     Move
@@ -187,17 +187,15 @@ TGT Cys     Destination of Asn
 AGA Arg     Pop as char
 TAT Tyr     If main stack is empty, jump to Gln
 AAT Asn     Jump back to Cys
-CAA Gln     Destination of Tyr
-
-TAG Stop
+CA.         ...loop to start
 ```
 
 ### Print integers from 1 to N
-`ATGAAC GGTCATAAC TGTGAAAAACATAACGGTTTATTTGAAGGTGGT GAAATTAGT TAG ACTGATAAT`
-(69 B)
+`ATGAAC GGTCATAAC TGTGAAAAACATAACGGTTTATTTGAAGGTGGT GAAATTAGT TAG ACTGATA`
+(67 B)
 
 ```
-ATG Start
+ATG Start                               .AT Asn     Jump back to Cys
 AAC Block size = 1
 
 GGT Gly     Move
@@ -224,7 +222,7 @@ TAG Stop
 
 ACT Thr     Destination of Ser
 GAT Asp     Drop
-AAT Asn     Jump back to Cys
+A.. Asn     Jump back to Cys
 ```
 
 ### Truth machine
@@ -242,7 +240,7 @@ TCT Ser     If <= 0, jump to Thr
 
 AAT Asn     Jump back to Cys
 
-AC. Thr     ...loop to start
+AC.         ...loop to start
 ```
 A few bytes have been golfed away here by making use of the fact that execution
 loops back around to the start.
@@ -285,12 +283,12 @@ subtracting 2 from 3).
 This makes life more fun.
 
 ### Primality test
-`ATGAAC GAACATAAG TGT GAAGGTGGT CCT TTTGAAGGAGGA GTT GGAGAA ATT CATAATCATAAGGGTATTGGT AGT GAT GAATTTGGTTTA AAT ACT GATTTTGATGGTATT AGT CATAAAAAATAG ACT CATAACAAATAG`
-(144 B)
+`ATGAAC GAACATAAG TGT GAAGGTGGT CCT TTTGAAGGAGGA GTT GGAGAA ATT CATAATCATAAGGGTATTGGT AGT GAT GAATTTGGTTTA AAT ACT GATTTTGATGGTATT AGT CATAAAAAATAG ACT CATAACAA`
+(140 B)
 
 ```
-ATG Start
-AAC Block size = 1
+ATG Start                       ..A Lys     Pop as int
+AAC Block size = 1              TGA Stop
 
 GAA Glu     Duplicate
 CAT His     Push
@@ -354,8 +352,7 @@ ACT Thr     Destination of Ser
 
 CAT His     Push
 AAC 1
-AAA Lys     Pop
-TAG Stop
+AA.         ...loop to start
 ```
 
 ## Notes etc.
