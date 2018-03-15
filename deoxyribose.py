@@ -87,10 +87,18 @@ def leu(pointer, main_stack, aux_stack):
     Leu
     Add the top elements of each stack.
     Place the result in the main stack.
-    If either stack is empty, do nothing.
+    If either stack is empty, treat it as zero.
     """
-    if main_stack and aux_stack:
-        main_stack.append(main_stack.pop() + aux_stack.pop())
+    # If either list is empty, treat it as zero
+    if main_stack:
+        a = int(main_stack.pop())
+    else:
+        a = 0
+    if aux_stack:
+        b = int(aux_stack.pop())
+    else:
+        b = 0
+    main_stack.append(a + b)
     return(pointer, main_stack, aux_stack)
 
 
@@ -99,10 +107,18 @@ def ile(pointer, main_stack, aux_stack):
     Ile
     Subtract the top of the aux stack from the top of the main stack.
     Place the result in the main stack.
-    If either stack is empty, do nothing.
+    If either stack is empty, treat it as zero.
     """
-    if main_stack and aux_stack:
-        main_stack.append(main_stack.pop() + aux_stack.pop())
+    # If either list is empty, treat it as zero
+    if main_stack:
+        a = int(main_stack.pop())
+    else:
+        a = 0
+    if aux_stack:
+        b = int(aux_stack.pop())
+    else:
+        b = 0
+    main_stack.append(a - b)
     return(pointer, main_stack, aux_stack)
 
 
@@ -111,10 +127,18 @@ def val(pointer, main_stack, aux_stack):
     Val
     Multiply the top elements of the two stacks.
     Place the result in the main stack.
-    If either stack is empty, do nothing.
+    If either stack is empty, treat it as one.
     """
-    if main_stack and aux_stack:
-        main_stack.append(main_stack.pop() * aux_stack.pop())
+    # If either list is empty, treat it as one
+    if main_stack:
+        a = int(main_stack.pop())
+    else:
+        a = 1
+    if aux_stack:
+        b = int(aux_stack.pop())
+    else:
+        b = 1
+    main_stack.append(a * b)
     return(pointer, main_stack, aux_stack)
 
 
@@ -124,10 +148,18 @@ def pro(pointer, main_stack, aux_stack):
     Divide the top of the main stack by the top of the aux stack.
     Result is rounded towards zero if not an integer.
     Place the result in the main stack.
-    If either stack is empty, do nothing.
+    If either stack is empty, treat it as one.
     """
-    if main_stack and aux_stack:
-        main_stack.append(int(main_stack.pop() / aux_stack.pop()))
+    # If either list is empty, treat it as one
+    if main_stack:
+        a = int(main_stack.pop())
+    else:
+        a = 1
+    if aux_stack:
+        b = int(aux_stack.pop())
+    else:
+        b = 1
+    main_stack.append(int(a / b))
     return(pointer, main_stack, aux_stack)
 
 
@@ -198,9 +230,9 @@ def ala(pointer, main_stack, aux_stack):
 def ser(pointer, main_stack, aux_stack):
     """
     Ser
-    If the main stack has a top element that is <= 0, jump to next Thr.
+    If the top element of the main stack is <= 0, jump to next Thr.
     """
-    if main_stack and (main_stack[-1] <= 0):
+    if main_stack[-1] <= 0:
         results = []
         for term in ["act", "acc", "aca", "acg"]:
             result, success = look_ahead(pointer, term)
@@ -262,6 +294,7 @@ def block_to_int(block):
             value += 2 * (4**i)
         elif char == 't':
             value += 3 * (4**i)
+
     return value
 
 
@@ -433,7 +466,6 @@ def main():
                 # If so, run the amino acid function
                 pointer, main_stack, aux_stack = GENETIC_CODE[codon](
                     pointer, main_stack, aux_stack)
-            print(codon, main_stack, aux_stack)
         else:
             # If not, look for a start codon
             pointer, in_gene = look_ahead(pointer, "atg")
