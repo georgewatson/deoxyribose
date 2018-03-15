@@ -222,7 +222,7 @@ TAG Stop
 
 ACT Thr     Destination of Ser
 GAT Asp     Drop
-A.. Asn     Jump back to Cys
+A..         ...loop to start
 ```
 
 ### Truth machine
