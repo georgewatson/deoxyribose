@@ -116,6 +116,8 @@ comments.
 `ATGAAG CATAAAGAC CACAACGCA...CATAACAGA TGTAGATATAATCAA TAG`
 (117 B)
 
+Accepts no input; prints `Hello, world!` to STDOUT.
+
 ```
 ATG Start
 AAG Block size = 2
@@ -147,6 +149,10 @@ TAG Stop
 `ATGAAC CATAACGAA GGT TGTGAATTAGGTATGGAAAAAA`
 (40 B)
 
+Accepts no input; prints an infinite series of newline-separated integers to
+STDOUT. The printed sequence starts at 2, but it would be trivial to add the
+expected `1, 1, `.
+
 ```
 ATG Start                       .AT Asn     Jump back to Cys
 AAC Block size = 1
@@ -171,6 +177,11 @@ A..         ...loop to start
 `ATGAAC TGTGGTTATAATCAA TTT TGTAGATATAATCA`
 (38 B)
 
+Accepts any number of characters or Unicode codepoints as arguments; prints its
+input to the screen.
+If the input contains spaces, these will be stripped unless the string is
+wrapped in quotes.
+
 ```
 ATG Start                                       ..A Gln     Destination of Tyr
 AAC Block size = 1                              TGA Stop
@@ -193,6 +204,9 @@ CA.         ...loop to start
 ### Print integers from 1 to N
 `ATGAAC GGTCATAAC TGTGAAAAACATAACGGTTTATTTGAAGGTGGT GAAATTAGT TAG ACTGATA`
 (67 B)
+
+Accepts an integer *N* as input; prints all integers from 1 to *N* to STDOUT,
+separated by newlines.
 
 ```
 ATG Start                               .AT Asn     Jump back to Cys
@@ -228,6 +242,12 @@ A..         ...loop to start
 ### Truth machine
 `ATGAAA TGTGAAAAA TCT AAT AC`
 (23 B)
+
+Accepts one integer as input.
+If this value is less than or equal to 0, it is printed once before the program
+terminates.
+If the value is greater than 0, it is printed infinitely.
+
 ```
 ATG Start                           ..A Thr   Destination of Ser
 AAA Block size = 0                  TGA Stop
@@ -285,6 +305,8 @@ This makes life more fun.
 ### Primality test
 `ATGAAC GAACATAAG TGT GAAGGTGGT CCT TTTGAAGGAGGA GTT GGAGAA ATT CATAATCATAAGGGTATTGGT AGT GAT GAATTTGGTTTA AAT ACT GATTTTGATGGTATT AGT CATAAAAAATAG ACT CATAACAA`
 (140 B)
+
+Accepts one integer as input; prints 1 if prime, 0 if composite.
 
 ```
 ATG Start                       ..A Lys     Pop as int
