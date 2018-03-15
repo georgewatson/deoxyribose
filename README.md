@@ -24,6 +24,9 @@ stop codon is found, execution will loop around to the very beginning.
 Clever use of the frameshifts this can lead to, combined with the degeneracy of
 the codon–amino acid correspondence, can allow some very fun and exciting things.
 
+The name of the language was selected due to being the "most-DNA-y" word that
+doesn't contain an A, C, G, or T, meaning it can be included in a comment.
+
 ## Amino acids (operators)
 
 The operators are defined by their correspondence to particular amino acids, as
@@ -100,6 +103,14 @@ back by arginine. There is no built-in string datatype, only chars ordered on
 the stack.
 
 ## Examples
+
+Note that the examples below include spaces to separate segments of the code for
+readability; these are unnecessary, ignored by the interpreter, and excluded
+from the given byte counts.
+
+The multi-line explanations given below each example will not run as expected
+unless all A, C, G, and T characters (case-insensitive) are removed from the
+comments.
 
 ### Hello, world!
 `ATGAAG CATAAAGAC CACAACGCA...CATAACAGA TGTAGATATAATCAA TAG`
@@ -217,17 +228,18 @@ AAT Asn     Jump back to Cys
 ```
 
 ### Truth machine
-`ATGAAC TCT TGTGAAAAAAAT ACTTAG`
+`ATGAAC TGTGAAAAA TCT AAT ACTTAG`
 (27 B)
 ```
 ATG Start
 AAC Block size = 1
 
-TCT Ser     If top element of main stack is <= 0, jump to Thr
-
 TGT Cys     Destination of Asn
 GAA Glu     Duplicate top block of main stack
 AAA Lys     Pop top block of main stack as int
+
+TCT Ser     If top element of main stack is <= 0, jump to Thr
+
 AAT Asn     Jump back to Cys
 
 ACT Thr     Destination of Ser
@@ -252,7 +264,7 @@ AAT Asn     Jump back to Cys
 ACT Thr     Destination of Ser
 TAG Stop
 ```
-does not work as expected, outputting a single `0` before terminating.
+also seems to work as expected, but actually involves a frameshift.
 
 This is because the `ACA` formed by the numeric literal 1 and
 the following Lys is recognised as the destination of the Ser → Thr jump, then
@@ -260,6 +272,87 @@ the frame-shifted `AAA` immediately following is interpreted as a Lysine; the co
 then runs through a series of other operations (Ile, Leu, Arg) before looping
 back to the start and terminating on the `TGA` formed by the start and block
 size codons.
+
+In fact, a numeric literal 1 cannot appear anywhere inside a loop, since all
+`ACN` codons translate to Thr.
+If the number 1 is necessary (say, to increment or decrement a counter),
+it must be pushed to the stack before entering the loop, or the
+value must be constructed in some other way (e.g. by subtracting 2 from 3).
+This makes life more fun.
+
+### Primality test
+`ATGAAC GAACATAAG TGT GAAGGTGGT CCT TTTGAAGGAGGA GTT GGAGAA ATT CATAATCATAAGGGTATTGGT AGT GAT GAATTTGGTTTA AAT ACT GATTTTGATGGTATT AGT CATAAAAAATAG ACT CATAACAAATAG`
+(144 B)
+
+```
+ATG Start
+AAC Block size = 1
+
+GAA Glu     Duplicate
+CAT His     Push
+AAG 2
+
+TGT Cys     Destination of Asn
+
+GAA Glu     Duplicate
+GGT Gly     Move
+GGT Gly     Move
+
+CCT Pro     Divide
+
+TTT Phe     Concatenate
+GAA Glu     Duplicate
+GGA Gly     Move
+GGA Gly     Move
+
+GTT Val     Multiply
+
+GGA Gly     Move
+GAA Glu     Duplicate
+
+ATT Ile     Subtract
+
+CAT His     Push
+AAT 3
+CAT His     Push
+AAG 2
+GGT Gly     Move
+ATT Ile     Subtract
+GGT Gly     Move
+
+AGT Ser     If <= 0, jump to Thr
+
+GAT Asp     Drop
+
+GAA Glu     Duplicate
+TTT Phe     Concatenate
+GGT Gly     Move
+TTA Leu     Add
+
+AAT Asn     Jump back to Cys
+
+ACT Thr     Destination of Ser
+
+GAT Asp     Drop
+TTT Phe     Concatenate
+GAT Asp     Drop
+GGT Gly     Move
+ATT Ile     Subtract
+
+AGT Ser     If <= 0, jump to Thr
+
+CAT His     Push
+AAA 0
+AAA Lys     Pop
+TAG Stop
+
+ACT Thr     Destination of Ser
+
+CAT His     Push
+AAC 1
+AAA Lys     Pop
+TAG Stop
+```
 
 ## Notes etc.
 

@@ -466,10 +466,6 @@ def main():
                 # If so, run the amino acid function
                 pointer, main_stack, aux_stack = GENETIC_CODE[codon](
                     pointer, main_stack, aux_stack)
-
-            # We're done with this codon now
-            codon = ""
-
         else:
             # If not, look for a start codon
             pointer, in_gene = look_ahead(pointer, "atg")
