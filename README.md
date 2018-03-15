@@ -273,11 +273,11 @@ then runs through a series of other operations (Ile, Leu, Arg) before looping
 back to the start and terminating on the `TGA` formed by the start and block
 size codons.
 
-In fact, a numeric literal 1 cannot appear anywhere inside a loop, since all
-`ACN` codons translate to Thr.
-If the number 1 is necessary (say, to increment or decrement a counter),
-it must be pushed to the stack before entering the loop, or the
-value must be constructed in some other way (e.g. by subtracting 2 from 3).
+In fact, a numeric literal 1 cannot appear anywhere between Ser and Thr, since
+all `ACN` codons translate to Thr, causing a frameshift.
+If the number 1 is necessary, it must be pushed to the stack before the
+conditional, or the value must be constructed in some other way (e.g. by
+subtracting 2 from 3).
 This makes life more fun.
 
 ### Primality test
