@@ -39,28 +39,28 @@ follows.
 * `TAG`, `TAA`, and `TGA`: Stop; exit the program and return 0.
 
 ### Charged amino acids — Single-stack operations
-* **His**: Push next block (expressed in quaternary notation, see below) to the
+* **His**: *Push* next block (expressed in quaternary notation, see below) to the
   top of the main stack
-* **Lys**: Pop top of main stack to standard output as an integer
-* **Arg**: Pop top of main stack to standard output as a Unicode character
-* **Glu**: Duplicate top element of main stack
-* **Asp**: Drop the top element of the main stack
+* **Lys**: *Pop* top of main stack to standard output as an integer
+* **Arg**: *Pop* top of main stack to standard output as a Unicode character
+* **Glu**: *Duplicate* top element of main stack
+* **Asp**: *Drop* the top element of the main stack
 
 ### Non-polar amino acids — Two-stack operations
-* **Leu**: Add the top elements of the main and auxiliary stack, remove these
+* **Leu**: *Add* the top elements of the main and auxiliary stack, remove these
   elements, and place the result on top of the main stack
-* **Ile**: Subtract the top element of the auxiliary stack from the top element
+* **Ile**: *Subtract* the top element of the auxiliary stack from the top element
   of the main stack, remove these elements, and place the result on top of the
   main stack
-* **Val**: Multiply the top elements of the main and auxiliary stack, remove these
+* **Val**: *Multiply* the top elements of the main and auxiliary stack, remove these
   elements, and place the result on top of the main stack
-* **Pro**: Divide the top element of the main stack by the top element
+* **Pro**: *Divide* the top element of the main stack by the top element
   of the auxiliary stack, round the result towards zero, remove these elements,
   and place the result on top of the main stack
-* **Met**: Swap the top elements of the main and auxiliary stacks
-* **Phe**: Put the auxiliary stack on top of the main stack, clearing the
-  auxiliary stack
-* **Gly**: Move the top element of the main stack to the top of the auxiliary
+* **Met**: *Swap* the top elements of the main and auxiliary stacks
+* **Phe**: *Concatenate* the main and auxiliary stacks, leaving the auxiliary
+  stack empty
+* **Gly**: *Move* the top element of the main stack to the top of the auxiliary
   stack
 * ~~**Ala**: Calculate the top element of the main stack modulo the top element
   of the auxiliary stack, remove these elements, and place the result on top of the
@@ -120,24 +120,24 @@ comments.
 ATG Start
 AAG Block size = 2
 
-CAT His     Push next block
-AAA 000     Start of block  0 +
-GAC 201     End of block    33  = 33 (ASCII !)
+CAT His     Push
+AAA 0 +
+GAC 33 =    33 (ASCII !)
 
 CAC His     Push next block
-AAC 001     Start of block  64 +
-GCA 210     End of block    36  = 100 (ASCII d)
+AAC 64 +
+GCA 36 =    100 (ASCII d)
 
 ...
 
-CAT His     Push next block
-AAC 001     Start of block  64 +
-AGA 020     End of block    8   = 72 (ASCII H)
+CAT His     Push
+AAC 64 +
+AGA 8 =     72 (ASCII H)
 
 TGT Cys     Destination of Asn
-AGA Arg     Pop top block as char
-TAT Tyr     If stack is empty, jump forward to Gln
-AAT Asn     Else, jump back to Cys
+AGA Arg     Pop as char
+TAT Tyr     If stack is empty, jump to Gln
+AAT Asn     Jump back to Cys
 CAA Gln     Destination of Tyr
 
 TAG Stop
@@ -151,19 +151,19 @@ TAG Stop
 ATG Start
 AAC Block size = 1
 
-CAT His     Push next block
-AAC 001     Numeric literal 1
-GAA Glu     Duplicate top element of main stack
+CAT His     Push
+AAC 1
+GAA Glu     Duplicate
 
-GGT Gly     Move main top to aux
+GGT Gly     Move
 
 TGT Cys     Destination of Asn
-GAA Glu     Duplicate top element of main stack
-TTA Leu     Add top elements of stacks
-GGT Gly     Move main top to aux
-ATG Met     Swap top elements
-GAA Glu     Duplicate top element of main stack
-AAA Lys     Pop top element of main stack as int
+GAA Glu     Duplicate
+TTA Leu     Add
+GGT Gly     Move
+ATG Met     Swap
+GAA Glu     Duplicate
+AAA Lys     Pop as int
 AAT Asn     Jump back to Cys
 ```
 
@@ -176,18 +176,18 @@ ATG Start
 AAC Block size = 1
 
 TGT Cys     Destination of Asn
-GGT Gly     Move top element of main stack to aux stack
-TAT Tyr     If the stack is empty, jump to next Gln
+GGT Gly     Move
+TAT Tyr     If main stack is empty, jump to Gln
 AAT Asn     Jump back to Cys
-CAA Gln     Destination for Tyr
+CAA Gln     Destination of Tyr
 
-TTT Phe     Put aux stack on top of main stack
+TTT Phe     Concatenate
 
-TGT
-AGA Arg     Pop main stack as char
-TAT
-AAT
-CAA
+TGT Cys     Destination of Asn
+AGA Arg     Pop as char
+TAT Tyr     If main stack is empty, jump to Gln
+AAT Asn     Jump back to Cys
+CAA Gln     Destination of Tyr
 
 TAG Stop
 ```
@@ -200,51 +200,55 @@ TAG Stop
 ATG Start
 AAC Block size = 1
 
-GGT Gly     Move top element of main stack to aux stack
-CAT His     Push next block
-AAC 001     Number 1
+GGT Gly     Move
+CAT His     Push
+AAC 1
 
 TGT Cys     Destination of Asn
-GAA Glu     Duplicate top element of main stack
-AAA Lys     Pop top element of main stack as int
-CAT His     Push next block
-AAC 001     Number 1
-GGT Gly     Move top element of main stack to aux stack
-TTA Leu     Add top elements
-TTT Phe     Put aux stack on top of main stack
-GAA Glu     Duplicate top element of main stack
-GGT Gly     Move top element of main stack to aux stack
-GGT Gly     Move top element of main stack to aux stack
+GAA Glu     Duplicate
+AAA Lys     Pop as int
+CAT His     Push
+AAC 1
+GGT Gly     Move
+TTA Leu     Add
+TTT Phe     Concatenate
+GAA Glu     Duplicate
+GGT Gly     Move
+GGT Gly     Move
 
-GAA Glu     Duplicate top element of main stack
-ATT Ile     Subtract top of aux stack from top of main stack
-AGT Ser     If top element of main stack is <= 0, jump to next Thr
+GAA Glu     Duplicate
+ATT Ile     Subtract
+AGT Ser     If <= 0, jump to next Thr
 
 TAG Stop
 
 ACT Thr     Destination of Ser
-GAT Asp     Drop the top element of the main stack
+GAT Asp     Drop
 AAT Asn     Jump back to Cys
 ```
 
 ### Truth machine
-`ATGAAC TGTGAAAAA TCT AAT ACTTAG`
-(27 B)
+`ATGAAA TGTGAAAAA TCT AAT AC`
+(23 B)
 ```
-ATG Start
-AAC Block size = 1
+ATG Start                           ..A Thr   Destination of Ser
+AAA Block size = 0                  TGA Stop
 
 TGT Cys     Destination of Asn
-GAA Glu     Duplicate top block of main stack
-AAA Lys     Pop top block of main stack as int
+GAA Glu     Duplicate
+AAA Lys     Pop as int
 
-TCT Ser     If top element of main stack is <= 0, jump to Thr
+TCT Ser     If <= 0, jump to Thr
 
 AAT Asn     Jump back to Cys
 
-ACT Thr     Destination of Ser
-TAG Stop
+AC. Thr     ...loop to start
 ```
+A few bytes have been golfed away here by making use of the fact that execution
+loops back around to the start.
+Frameshifts allow the same base sequence to do two different things: here,
+ACATGAAA can be read as AC**ATGAAA**, a start codon and a block size, or as
+**ACATGA**AA, a Thr and a stop codon.
 
 Note that the code
 `ATGAAC TCT TGTCATAACAAAAAT ACTTAG`
@@ -253,12 +257,12 @@ Note that the code
 ATG Start
 AAC Block size = 1
 
-TCT Ser     If top element of main stack is <= 0, jump to Thr
+TCT Ser     If <= 0, jump to Thr
 
 TGT Cys     Destination of Asn
-CAT His     Push next block to main stack
+CAT His     Push
 AAC 1
-AAA Lys     Pop top block of main stack as int
+AAA Lys     Pop as int
 AAT Asn     Jump back to Cys
 
 ACT Thr     Destination of Ser
