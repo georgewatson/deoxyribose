@@ -240,8 +240,8 @@ A..         ...loop to start
 ```
 
 ### Truth machine
-`ATGAAA TGTGAAAAA TCT AAT AC`
-(23 B)
+`ATGTGAGAAAAATCTAACTTA
+(21 B)
 
 Accepts one integer as input.
 If this value is less than or equal to 0, it is printed once before the program
@@ -249,24 +249,33 @@ terminates.
 If the value is greater than 0, it is printed infinitely.
 
 ```
-ATG Start                           ..A Thr   Destination of Ser
-AAA Block size = 0                  TGA Stop
-
-TGT Cys     Destination of Asn
-GAA Glu     Duplicate
-AAA Lys     Pop as int
-
-TCT Ser     If <= 0, jump to Thr
-
-AAT Asn     Jump back to Cys
-
-AC.         ...loop to start
+ATG Start                           TAA Stop
+TGA Block size = 56                 TGT Cys     Destination of Asn
+GAA Glu     Duplicate               GAG Glu     Duplicate
+AAA Lys     Pop as int              AAA Lys     Pop as int
+TCT Ser     If >= 0, jump to Thr    AAT Asn     Jump back to Cys
+AAC Asn     Jump back to Cys
+TTA                                 ACT Thr     Destination of Ser
 ```
-A few bytes have been golfed away here by making use of the fact that execution
-loops back around to the start.
-Frameshifts allow the same base sequence to do two different things: here,
-ACATGAAA can be read as AC**ATGAAA**, a start codon and a block size, or as
-**ACATGA**AA, a Thr and a stop codon.
+This code is heavily golfed, making heavy use of frameshifts for maximum
+compression.
+
+Execution starts at the initial ATG (note that there are no integer literals
+anywhere, so the block size is meaningless and can be used for other purposes,
+as has been done here).
+The top stack element is printed, then the magic happens.
+* If the top stack element (the user input) is zero, we jump forward to the `ACT`
+  formed by Asn and the following `TTA` (which would code for Leu, but is never
+  actually read in this reference frame), resulting in a frameshift.
+  Looping back to the start forms the stop codon `TAA`.
+* If the top stack element is 1, we continue reading to Asn, which searches
+  backwards for a Cys. This is found in the `TGT` formed by the start codon and
+  the block size, so we jump back there, frameshifted.
+  We now enter a tighter, less complex loop, which simply prints the top stack
+  element indefinitely.
+
+As this demonstrates, frameshifts and degeneracy are powerful tools that allow
+the same base sequence to do two (or more!) totally different things.
 
 Note that the code
 `ATGAAC TCT TGTCATAACAAAAAT ACTTAG`
@@ -286,20 +295,19 @@ AAT Asn     Jump back to Cys
 ACT Thr     Destination of Ser
 TAG Stop
 ```
-also seems to work as expected, but actually involves a frameshift.
-
-This is because the `ACA` formed by the numeric literal 1 and
+doesn't look like it would print on an input of zero, but actually does because
+of a frameshift: The `ACA` formed by the numeric literal 1 and
 the following Lys is recognised as the destination of the Ser → Thr jump, then
 the frame-shifted `AAA` immediately following is interpreted as a Lysine; the code
-then runs through a series of other operations (Ile, Leu, Arg) before looping
+then runs through a series of invisible operations (Ile, Leu, Arg) before looping
 back to the start and terminating on the `TGA` formed by the start and block
 size codons.
 
 In fact, a numeric literal 1 cannot appear anywhere between Ser and Thr, since
 all `ACN` codons translate to Thr, causing a frameshift.
-If the number 1 is necessary, it must be pushed to the stack before the
-conditional, or the value must be constructed in some other way (e.g. by
-subtracting 2 from 3).
+If the number 1 is necessary, and a frameshift is undesirable, the value must be
+pushed to the stack before the conditional or constructed in some other way
+(e.g. by subtracting 2 from 3).
 This makes life more fun.
 
 ### Primality test
