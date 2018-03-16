@@ -219,7 +219,7 @@ def trp(pointer, main_stack, aux_stack):
 
 def ala(pointer, main_stack, aux_stack):
     """
-    Ala (DEPRECATED)
+    Ala
     Calculate main top modulo aux top.
     Place the result in the main stack.
     If the main stack is empty, treat it as zero.
@@ -419,10 +419,10 @@ GENETIC_CODE = {
 
     "tgg": trp,
 
-    "gct": ala,  # Note:
-    "gcc": ala,  # Ala is deprecated
-    "gca": ala,  #
-    "gcg": ala,  #
+    "gct": ala,
+    "gcc": ala,
+    "gca": ala,
+    "gcg": ala,
 
     # Polar amino acids: Flow control
 

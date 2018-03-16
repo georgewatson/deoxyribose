@@ -65,10 +65,9 @@ follows.
 * **Trp**: *Exponentiate* the top element of the main stack to the power of the
   top element of the auxiliary stack, remove these elements, and place the
   result on top of the main stack
-* ~~**Ala**: Calculate the top element of the main stack modulo the top element
-  of the auxiliary stack, remove these elements, and place the result on top of the
-  main stack~~ (*deprecated; likely to be removed in future versions; use of Pro
-  and Ile to replicate functionality is recommended*)
+* **Ala**: *Modulo* — calculate the remainder when the top element of the main
+  stack is divided by the top element of the auxiliary stack, remove both of
+  these elements, and place the result on top of the main stack
 
 ### Polar amino acids — Flow control
 * **Ser**: If the top element of the main stack is less than or equal to zero,
