@@ -240,7 +240,7 @@ A..         ...loop to start
 ```
 
 ### Truth machine
-`ATGTGAGAAAAATCTAACTTA
+`ATGTGAGAAAAATCTAACTTA`
 (21 B)
 
 Accepts one integer as input.
