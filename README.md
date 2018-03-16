@@ -315,8 +315,8 @@ pushed to the stack before the conditional or constructed in some other way
 This makes life more fun.
 
 ### Primality test
-`ATGAAC GAACATAAG TGT GAAGGTGGT CCT TTTGAAGGAGGA GTT GGAGAA ATT CATAACGGT AGT GAT GAATTTGGTTTA AAT ACT GATTTTGATGGTATT AGT CATAAAAAATAG ACT CATAACAA`
-(128 B)
+`ATGAAC GAACATAAG TGT GAAGGTGGC GCT CATAACGGT AGT GAT GAATTTGGTTTA AAT ACT GATTTTGATGGTATT AGT CATAAAAAATAG ACT CATAACAA`
+(104 B)
 
 Accepts one integer as input; prints 1 if prime, 0 if composite.
 
@@ -332,21 +332,9 @@ TGT Cys     Destination of Asn
 
 GAA Glu     Duplicate
 GGT Gly     Move
-GGT Gly     Move
+GGC Gly     Move
 
-CCT Pro     Divide
-
-TTT Phe     Concatenate
-GAA Glu     Duplicate
-GGA Gly     Move
-GGA Gly     Move
-
-GTT Val     Multiply
-
-GGA Gly     Move
-GAA Glu     Duplicate
-
-ATT Ile     Subtract
+GCT Ala     Modulo
 
 CAT His     Push
 AAC 1
