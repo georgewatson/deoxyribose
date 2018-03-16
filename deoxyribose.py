@@ -198,6 +198,25 @@ def gly(pointer, main_stack, aux_stack):
     return(pointer, main_stack, aux_stack)
 
 
+def trp(pointer, main_stack, aux_stack):
+    """
+    Trp
+    Take the top element of the main stack to the power of the top element of
+    the auxiliary stack.
+    If either stack is empty, treat it as zero.
+    """
+    if main_stack:
+        a = main_stack.pop()
+    else:
+        a = 0
+    if aux_stack:
+        b = aux_stack.pop()
+    else:
+        b = 0
+    main_stack.append(a ** b)
+    return(pointer, main_stack, aux_stack)
+
+
 def ala(pointer, main_stack, aux_stack):
     """
     Ala (DEPRECATED)
@@ -397,6 +416,8 @@ GENETIC_CODE = {
     "ggc": gly,
     "gga": gly,
     "ggg": gly,
+
+    "tgg": trp,
 
     "gct": ala,  # Note:
     "gcc": ala,  # Ala is deprecated

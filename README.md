@@ -62,6 +62,9 @@ follows.
   stack empty
 * **Gly**: *Move* the top element of the main stack to the top of the auxiliary
   stack
+* **Trp**: *Exponentiate* the top element of the main stack to the power of the
+  top element of the auxiliary stack, remove these elements, and place the
+  result on top of the main stack
 * ~~**Ala**: Calculate the top element of the main stack modulo the top element
   of the auxiliary stack, remove these elements, and place the result on top of the
   main stack~~ (*deprecated; likely to be removed in future versions; use of Pro
@@ -181,6 +184,8 @@ Accepts any number of characters or Unicode codepoints as arguments; prints its
 input to the screen.
 If the input contains spaces, these will be stripped unless the string is
 wrapped in quotes.
+Input containing numbers is fine, but entirely numeric input will be converted
+into the corresponding Unicode character (e.g. input of `100` prints `d`).
 
 ```
 ATG Start                                       ..A Gln     Destination of Tyr
@@ -257,7 +262,7 @@ TCT Ser     If >= 0, jump to Thr    AAT Asn     Jump back to Cys
 AAC Asn     Jump back to Cys
 TTA                                 ACT Thr     Destination of Ser
 ```
-This code is heavily golfed, making heavy use of frameshifts for maximum
+This code is heavily golfed, making liberal use of frameshifts for maximum
 compression.
 
 Execution starts at the initial ATG (note that there are no integer literals
