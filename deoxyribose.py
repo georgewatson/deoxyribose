@@ -501,12 +501,11 @@ BLOCK_SIZE = 1
 # Get code, keeping only A, C, G, and T characters
 if len(sys.argv) > 1:
     CHROMOSOME = re.sub('[^acgt]', '', sys.argv[1].lower())
-    # Run interpreter
-    main()
 else:
     # If no program was specified as an argument, accept from standard input
     while True:
-        USER_INPUT = input()
+        USER_INPUT = "".join([i for i in sys.stdin])
         CHROMOSOME = re.sub('[^acgt]', '', USER_INPUT.lower())
-        # Run interpreter
-        main()
+
+# Run interpreter
+main()
