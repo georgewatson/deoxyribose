@@ -47,13 +47,13 @@ follows.
 * **Asp**: *Drop* the top element of the main stack
 
 ### Non-polar amino acids — Two-stack operations
-* **Leu**: *Add* the top elements of the main and auxiliary stack, remove these
+* **Leu**: *Add* the top elements of the main and auxiliary stacks, remove these
   elements, and place the result on top of the main stack
 * **Ile**: *Subtract* the top element of the auxiliary stack from the top element
   of the main stack, remove these elements, and place the result on top of the
   main stack
-* **Val**: *Multiply* the top elements of the main and auxiliary stack, remove these
-  elements, and place the result on top of the main stack
+* **Val**: *Multiply* the top elements of the main and auxiliary stacks, remove
+  these elements, and place the result on top of the main stack
 * **Pro**: *Divide* the top element of the main stack by the top element
   of the auxiliary stack, round the result towards zero, remove these elements,
   and place the result on top of the main stack
@@ -96,13 +96,13 @@ every time you want a number, so choose the balance carefully.
 Once stored inside the stack, values are not subject to these same limits, and
 are treated just like ordinary Python integers (which can't handle numbers as
 large as the notation described above theoretically supports; this is a
-shortcoming of the current implementation of the interpreter, not the language).
+shortcoming of the current implementation of the interpreter).
 Negative integers can therefore be constructed by subtracting a natural number
 from zero.
 
-Unicode characters can be stored as their character reference, and converted
-back by arginine. There is no built-in string datatype, only chars ordered on
-the stack.
+Unicode characters can be stored as their character reference and converted
+back by arginine. There is no built-in string datatype, only chars (which are
+actually ints) ordered on the stack.
 
 ## Examples
 
@@ -112,7 +112,7 @@ from the given byte counts.
 
 The multi-line explanations given below each example will not run as expected
 unless all A, C, G, and T characters (case-insensitive) are removed from the
-comments.
+comments; all other comment characters are fine.
 
 ### Hello, world!
 `ATGAAG CATAAAGAC CACAACGCA...CATAACAGA TGTAGATATAATCAA TAG`
@@ -153,7 +153,7 @@ TAG Stop
 
 Accepts no input; prints an infinite series of newline-separated integers to
 STDOUT. The printed sequence starts at 2, but it would be trivial to add the
-expected `1, 1, `.
+expected `1\n1\n` at the expense of a few more bytes.
 
 ```
 ATG Start                       .AT Asn     Jump back to Cys
@@ -257,16 +257,16 @@ ATG Start                           TAA Stop
 TGA Block size = 56                 TGT Cys     Destination of Asn
 GAA Glu     Duplicate               GAG Glu     Duplicate
 AAA Lys     Pop as int              AAA Lys     Pop as int
-TCT Ser     If >= 0, jump to Thr    AAT Asn     Jump back to Cys
+TCT Ser     If <= 0, jump to Thr    AAT Asn     Jump back to Cys
 AAC Asn     Jump back to Cys
 TTA                                 ACT Thr     Destination of Ser
 ```
 This code is heavily golfed, making liberal use of frameshifts for maximum
 compression.
 
-Execution starts at the initial ATG (note that there are no integer literals
-anywhere, so the block size is meaningless and can be used for other purposes,
-as has been done here).
+Execution starts at the initial ATG.
+There are no integer literals anywhere, so the block size is meaningless and can
+be used for other purposes — more on that later.
 The top stack element is printed, then the magic happens.
 * If the top stack element (the user input) is zero, we jump forward to the `ACT`
   formed by Asn and the following `TTA` (which would code for Leu, but is never
