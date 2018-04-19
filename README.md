@@ -41,9 +41,9 @@ follows.
 ### Charged amino acids — Single-stack operations
 * **His**: *Push* next block (expressed in quaternary notation, see below) to the
   top of the main stack
-* **Lys**: *Pop* top of main stack to standard output as an integer
+* **Lys**: *Pop* top of main stack to standard output as a number
 * **Arg**: *Pop* top of main stack to standard output as a Unicode character
-* **Glu**: *Duplicate* top element of main stack
+* **Glu**: *Duplicate* the top element of the main stack
 * **Asp**: *Drop* the top element of the main stack
 
 ### Non-polar amino acids — Two-stack operations

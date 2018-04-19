@@ -41,7 +41,7 @@ def his(pointer, main_stack, aux_stack):
 def lys(pointer, main_stack, aux_stack):
     """
     Lys
-    If the main stack is non-empty, pop the top element as an integer.
+    If the main stack is non-empty, pop the top element as a number.
     """
     # If the stack is empty, do nothing
     if main_stack:
@@ -52,7 +52,8 @@ def lys(pointer, main_stack, aux_stack):
 def arg(pointer, main_stack, aux_stack):
     """
     Arg
-    If the main stack is non-empty, pop the top element as a Unicode character.
+    If the main stack is non-empty, pop the top element, round it towards zero,
+    and print it as a Unicode character.
     """
     if main_stack:
         sys.stdout.write(str(chr(int(main_stack.pop()))))
@@ -146,7 +147,7 @@ def pro(pointer, main_stack, aux_stack):
     """
     Pro
     Divide the top of the main stack by the top of the aux stack.
-    Result is rounded towards zero if not an integer.
+    Result is a float.
     Place the result in the main stack.
     If either stack is empty, treat it as one.
     """
@@ -159,7 +160,7 @@ def pro(pointer, main_stack, aux_stack):
         b = int(aux_stack.pop())
     else:
         b = 1
-    main_stack.append(int(a / b))
+    main_stack.append(a / b)
     return(pointer, main_stack, aux_stack)
 
 
