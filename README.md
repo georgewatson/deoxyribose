@@ -43,26 +43,26 @@ follows.
   top of the main stack
 * **Lys**: *Pop* top of main stack to standard output as a number
 * **Arg**: *Pop* top of main stack to standard output as a Unicode character
-* **Glu**: *Duplicate* the top element of the main stack
+* **Glu**: *Dupe* (duplicate) the top element of the main stack
 * **Asp**: *Drop* the top element of the main stack
 
 ### Non-polar amino acids — Two-stack operations
-* **Leu**: *Add* the top elements of the main and auxiliary stacks, remove these
+* **Leu**: *Plus* (add) the top elements of the main and auxiliary stacks, remove these
   elements, and place the result on top of the main stack
-* **Ile**: *Subtract* the top element of the auxiliary stack from the top element
+* **Ile**: *Minus* (subtract) the top element of the auxiliary stack from the top element
   of the main stack, remove these elements, and place the result on top of the
   main stack
-* **Val**: *Multiply* the top elements of the main and auxiliary stacks, remove
+* **Val**: *Mul* (multiply) the top elements of the main and auxiliary stacks, remove
   these elements, and place the result on top of the main stack
 * **Pro**: *Divide* the top element of the main stack by the top element
   of the auxiliary stack, round the result towards zero, remove these elements,
   and place the result on top of the main stack
-* **Met**: *Swap* the top elements of the main and auxiliary stacks
-* **Phe**: *Concatenate* the main and auxiliary stacks, leaving the auxiliary
+* **Met**: *Swop* (swap) the top elements of the main and auxiliary stacks
+* **Phe**: *Join* (concatenate) the main and auxiliary stacks, leaving the auxiliary
   stack empty
 * **Gly**: *Move* the top element of the main stack to the top of the auxiliary
   stack
-* **Trp**: *Exponentiate* the top element of the main stack to the power of the
+* **Trp**: *Power* (exponentiate) the top element of the main stack to the power of the
   top element of the auxiliary stack, remove these elements, and place the
   result on top of the main stack
 * **Ala**: *Modulo* — calculate the remainder when the top element of the main
@@ -70,10 +70,10 @@ follows.
   these elements, and place the result on top of the main stack
 
 ### Polar amino acids — Flow control
-* **Ser**: If the top element of the main stack is less than or equal to zero,
-  jump to the next **Thr**
-* **Tyr**: If the main stack is empty, jump to the next **Gln**
-* **Asn**: Jump backwards to the previous **Cys**
+* **Ser**: *Jump if <=0* – If the top element of the main stack is less than or
+  equal to zero, jump to the next **Thr**
+* **Tyr**: *Jump if null* – If the main stack is empty, jump to the next **Gln**
+* **Asn**: *Loop* – Jump backwards to the previous **Cys**
 
 Note that the length of these jumps need not always be a multiple of three. This
 can cause frameshifts, which are half the fun.
@@ -161,16 +161,16 @@ AAC Block size = 1
 
 CAT His     Push
 AAC 1
-GAA Glu     Duplicate
+GAA Glu     Dupe
 
 GGT Gly     Move
 
 TGT Cys     Destination of Asn
-GAA Glu     Duplicate
-TTA Leu     Add
+GAA Glu     Dupe
+TTA Leu     Plus
 GGT Gly     Move
-ATG Met     Swap
-GAA Glu     Duplicate
+ATG Met     Swop
+GAA Glu     Dupe
 AAA Lys     Pop as int
 A..         ...loop to start
 ```
@@ -196,7 +196,7 @@ TAT Tyr     If main stack is empty, jump to Gln
 AAT Asn     Jump back to Cys
 CAA Gln     Destination of Tyr
 
-TTT Phe     Concatenate
+TTT Phe     Join
 
 TGT Cys     Destination of Asn
 AGA Arg     Pop as char
@@ -221,19 +221,19 @@ CAT His     Push
 AAC 1
 
 TGT Cys     Destination of Asn
-GAA Glu     Duplicate
+GAA Glu     Dupe
 AAA Lys     Pop as int
 CAT His     Push
 AAC 1
 GGT Gly     Move
-TTA Leu     Add
-TTT Phe     Concatenate
-GAA Glu     Duplicate
+TTA Leu     Plus
+TTT Phe     Join
+GAA Glu     Dupe
 GGT Gly     Move
 GGT Gly     Move
 
-GAA Glu     Duplicate
-ATT Ile     Subtract
+GAA Glu     Dupe
+ATT Ile     Minus
 AGT Ser     If <= 0, jump to next Thr
 
 TAG Stop
@@ -255,7 +255,7 @@ If the value is greater than 0, it is printed infinitely.
 ```
 ATG Start                           TAA Stop
 TGA Block size = 56                 TGT Cys     Destination of Asn
-GAA Glu     Duplicate               GAG Glu     Duplicate
+GAA Glu     Dupe               GAG Glu     Dupe
 AAA Lys     Pop as int              AAA Lys     Pop as int
 TCT Ser     If <= 0, jump to Thr    AAT Asn     Jump back to Cys
 AAC Asn     Jump back to Cys
@@ -324,13 +324,13 @@ Accepts one integer as input; prints 1 if prime, 0 if composite.
 ATG Start                       ..A Lys     Pop as int
 AAC Block size = 1              TGA Stop
 
-GAA Glu     Duplicate
+GAA Glu     Dupe
 CAT His     Push
 AAG 2
 
 TGT Cys     Destination of Asn
 
-GAA Glu     Duplicate
+GAA Glu     Dupe
 GGT Gly     Move
 GGC Gly     Move
 
@@ -344,20 +344,20 @@ AGT Ser     If <= 0, jump to Thr
 
 GAT Asp     Drop
 
-GAA Glu     Duplicate
-TTT Phe     Concatenate
+GAA Glu     Dupe
+TTT Phe     Join
 GGT Gly     Move
-TTA Leu     Add
+TTA Leu     Plus
 
 AAT Asn     Jump back to Cys
 
 ACT Thr     Destination of Ser
 
 GAT Asp     Drop
-TTT Phe     Concatenate
+TTT Phe     Join
 GAT Asp     Drop
 GGT Gly     Move
-ATT Ile     Subtract
+ATT Ile     Minus
 
 AGT Ser     If <= 0, jump to Thr
 
