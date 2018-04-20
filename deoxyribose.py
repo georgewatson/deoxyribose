@@ -172,10 +172,13 @@ def met(pointer, main_stack, aux_stack):
     """
     # If either list is empty, just move one way
     # If both are empty, do nothing
+    a = None
     if main_stack:
-        aux_stack.append(main_stack.pop())
+        a = main_stack.pop()
     if aux_stack:
         main_stack.append(aux_stack.pop())
+    if a is not None:
+        aux_stack.append(a)
     return(pointer, main_stack, aux_stack)
 
 
