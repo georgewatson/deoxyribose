@@ -53,10 +53,10 @@ def arg(pointer, main_stack, aux_stack):
     """
     Arg
     If the main stack is non-empty, pop the top element, round it towards zero,
-    and print it as a Unicode character.
+    take the absolute value, and print it as a Unicode character.
     """
     if main_stack:
-        sys.stdout.write(str(chr(int(main_stack.pop()))))
+        sys.stdout.write(str(chr(abs(int(main_stack.pop())))))
     return(pointer, main_stack, aux_stack)
 
 
