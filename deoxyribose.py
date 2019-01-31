@@ -8,6 +8,7 @@ Released under an MIT licence
 """
 
 # pylint: disable=unused-argument
+# pylint: disable=invalid-name
 
 import sys
 import re
@@ -18,6 +19,8 @@ def stop(pointer, main_stack, aux_stack):
     Stop
     Terminate execution.
     """
+    if VERBOSE:
+        print("Stop", main_stack, aux_stack)
     sys.exit(0)
 
 
@@ -27,14 +30,13 @@ def stop(pointer, main_stack, aux_stack):
 def his(pointer, main_stack, aux_stack):
     """
     His
-    Treat next block as an integer literal in quaternary notation.
+    Treat next codon as an integer literal in quaternary notation.
     Push the value to the main stack.
     """
-    block = ""
-    for _ in range(BLOCK_SIZE):
-        codon, pointer = read_next_codon(pointer)
-        block += codon
-    main_stack.append(block_to_int(block))
+    if VERBOSE:
+        print("His", main_stack, aux_stack)
+    codon, pointer = read_next_codon(pointer)
+    main_stack.append(codon_to_int(codon))
     return(pointer, main_stack, aux_stack)
 
 
@@ -43,6 +45,8 @@ def lys(pointer, main_stack, aux_stack):
     Lys
     If the main stack is non-empty, pop the top element as a number.
     """
+    if VERBOSE:
+        print("Lys", main_stack, aux_stack)
     # If the stack is empty, do nothing
     if main_stack:
         print(main_stack.pop())
@@ -55,6 +59,8 @@ def arg(pointer, main_stack, aux_stack):
     If the main stack is non-empty, pop the top element, round it towards zero,
     take the absolute value, and print it as a Unicode character.
     """
+    if VERBOSE:
+        print("Arg", main_stack, aux_stack)
     if main_stack:
         sys.stdout.write(str(chr(abs(int(main_stack.pop())))))
     return(pointer, main_stack, aux_stack)
@@ -65,6 +71,8 @@ def glu(pointer, main_stack, aux_stack):
     Glu
     If the main stack is non-empty, duplicate the top element.
     """
+    if VERBOSE:
+        print("Glu", main_stack, aux_stack)
     if main_stack:
         main_stack.append(main_stack[-1])
     return(pointer, main_stack, aux_stack)
@@ -75,6 +83,8 @@ def asp(pointer, main_stack, aux_stack):
     Asp
     If the main stack is non-empty, drop the top element.
     """
+    if VERBOSE:
+        print("Asp", main_stack, aux_stack)
     if main_stack:
         main_stack = main_stack[:-1]
     return(pointer, main_stack, aux_stack)
@@ -90,6 +100,8 @@ def leu(pointer, main_stack, aux_stack):
     Place the result in the main stack.
     If either stack is empty, treat it as zero.
     """
+    if VERBOSE:
+        print("Leu", main_stack, aux_stack)
     # If either list is empty, treat it as zero
     if main_stack:
         a = int(main_stack.pop())
@@ -110,6 +122,8 @@ def ile(pointer, main_stack, aux_stack):
     Place the result in the main stack.
     If either stack is empty, treat it as zero.
     """
+    if VERBOSE:
+        print("Ile", main_stack, aux_stack)
     # If either list is empty, treat it as zero
     if main_stack:
         a = int(main_stack.pop())
@@ -130,6 +144,8 @@ def val(pointer, main_stack, aux_stack):
     Place the result in the main stack.
     If either stack is empty, treat it as one.
     """
+    if VERBOSE:
+        print("Ile", main_stack, aux_stack)
     # If either list is empty, treat it as one
     if main_stack:
         a = int(main_stack.pop())
@@ -151,6 +167,8 @@ def pro(pointer, main_stack, aux_stack):
     Place the result in the main stack.
     If either stack is empty, treat it as one.
     """
+    if VERBOSE:
+        print("Pro", main_stack, aux_stack)
     # If either list is empty, treat it as one
     if main_stack:
         a = int(main_stack.pop())
@@ -170,6 +188,8 @@ def met(pointer, main_stack, aux_stack):
     Swap the top elements of the two stacks.
     Gracefully handles empty stacks.
     """
+    if VERBOSE:
+        print("Met", main_stack, aux_stack)
     # If either list is empty, just move one way
     # If both are empty, do nothing
     a = None
@@ -187,6 +207,8 @@ def phe(pointer, main_stack, aux_stack):
     Phe
     Put aux stack on top of main stack, preserving its order
     """
+    if VERBOSE:
+        print("Phe", main_stack, aux_stack)
     main_stack += aux_stack
     aux_stack = []
     return(pointer, main_stack, aux_stack)
@@ -197,6 +219,8 @@ def gly(pointer, main_stack, aux_stack):
     Gly
     If the main stack is non-empty, move the top element to the aux stack.
     """
+    if VERBOSE:
+        print("Gly", main_stack, aux_stack)
     if main_stack:
         aux_stack.append(main_stack.pop())
     return(pointer, main_stack, aux_stack)
@@ -209,6 +233,8 @@ def trp(pointer, main_stack, aux_stack):
     the auxiliary stack.
     If either stack is empty, treat it as zero.
     """
+    if VERBOSE:
+        print("Trp", main_stack, aux_stack)
     if main_stack:
         a = main_stack.pop()
     else:
@@ -229,6 +255,8 @@ def ala(pointer, main_stack, aux_stack):
     If the main stack is empty, treat it as zero.
     If the aux stack is empty, treat it as one.
     """
+    if VERBOSE:
+        print("Ala", main_stack, aux_stack)
     # If either list is empty, treat it as zero
     if main_stack:
         a = int(main_stack.pop())
@@ -248,62 +276,124 @@ def ala(pointer, main_stack, aux_stack):
 def ser(pointer, main_stack, aux_stack):
     """
     Ser
-    If the top element of the main stack is <= 0, jump to next Thr.
+    If the top element of the main stack is <= 0, jump to next occurrence of
+    the following codon.
     """
+    if VERBOSE:
+        print("Ser", main_stack, aux_stack)
+    term, pointer = read_next_codon(pointer)
     if main_stack and (main_stack[-1] <= 0):
         results = []
-        for term in ["act", "acc", "aca", "acg"]:
-            result, success = look_ahead(pointer, term)
-            if success:
-                results.append(result - pointer)
+        result, success = look_ahead(pointer, term)
+        if success:
+            results.append(result - pointer)
         if results:
             pointer += min(results) + 1
+    return(pointer, main_stack, aux_stack)
+
+
+def thr(pointer, main_stack, aux_stack):
+    """
+    Thr
+    If the top element of the main stack is <= 0, jump back to previous
+    occurrence of the following codon.
+    """
+    if VERBOSE:
+        print("Thr", main_stack, aux_stack)
+    term, _ = read_next_codon(pointer)
+    if main_stack and (main_stack[-1] <= 0):
+        results = []
+        result, success = look_back(pointer, term)
+        if success:
+            results.append(pointer - result)
+        if results:
+            pointer -= min(results) - 1
     return(pointer, main_stack, aux_stack)
 
 
 def tyr(pointer, main_stack, aux_stack):
     """
     Tyr
-    If main stack is empty, jump to next Gln.
+    If main stack is empty, jump to next occurrence of the following codon.
     """
+    if VERBOSE:
+        print("Tyr", main_stack, aux_stack)
+    term, pointer = read_next_codon(pointer)
     if not main_stack:
         results = []
-        for term in ["caa", "cag"]:
-            result, success = look_ahead(pointer, term)
-            if success:
-                results.append(result - pointer)
+        result, success = look_ahead(pointer, term)
+        if success:
+            results.append(result - pointer)
         if results:
             pointer += min(results) + 1
+    return(pointer, main_stack, aux_stack)
+
+
+def gln(pointer, main_stack, aux_stack):
+    """
+    Gln
+    If the main stack is empty, jump back to previous occurrence of the
+    following codon.
+    """
+    if VERBOSE:
+        print("Gln", main_stack, aux_stack)
+    term, _ = read_next_codon(pointer)
+    if not main_stack:
+        results = []
+        result, success = look_back(pointer, term)
+        if success:
+            results.append(pointer - result)
+        if results:
+            pointer -= min(results) - 1
     return(pointer, main_stack, aux_stack)
 
 
 def asn(pointer, main_stack, aux_stack):
     """
     Asn
-    Jump to previous Cys.
+    Unconditionally jump to previous occurrence of the next codon.
     """
+    term, _ = read_next_codon(pointer)
+    if VERBOSE:
+        print("Asn", main_stack, aux_stack, term)
     results = []
-    for term in ["tgt", "tgc"]:
-        result, success = look_back(pointer, term)
-        if success:
-            results.append(pointer - result)
+    result, success = look_back(pointer, term)
+    if success:
+        results.append(pointer - result)
     if results:
         pointer -= min(results) - 1
+    return(pointer, main_stack, aux_stack)
+
+
+def cys(pointer, main_stack, aux_stack):
+    """
+    Cys
+    Unconditionally jump to next occurrence of the next codon.
+    """
+    term, pointer = read_next_codon(pointer)
+    if VERBOSE:
+        print("Cys", main_stack, aux_stack)
+    results = []
+    result, success = look_ahead(pointer, term)
+    if success:
+        results.append(result - pointer)
+    if results:
+        pointer += min(results) + 1
     return(pointer, main_stack, aux_stack)
 
 
 # Helper functions
 
 
-def block_to_int(block):
+def codon_to_int(codon):
     """
-    Convert a quaternary block to an integer, and return the result.
+    Convert a quaternary codon to an integer, and return the result.
     """
-    block = block.lower()
+    codon = codon.lower()
     i = 0
     value = 0
-    for i in range(len(block)):
-        char = block[-i-1]
+    for i in range(3):
+        char = codon[-i-1]
         if char == 'a':
             value += 0
         elif char == 'c':
@@ -339,8 +429,7 @@ def look_ahead(pointer, search_term):
                 CHROMOSOME[(pointer-1) % len(CHROMOSOME)] == search_term[1] and
                 CHROMOSOME[(pointer-2) % len(CHROMOSOME)] == search_term[0]):
             return(pointer, True)
-        else:
-            pointer += 1
+        pointer += 1
     return(pointer, False)
 
 
@@ -356,8 +445,7 @@ def look_back(pointer, search_term):
                 CHROMOSOME[(pointer-1) % len(CHROMOSOME)] == search_term[1] and
                 CHROMOSOME[(pointer-2) % len(CHROMOSOME)] == search_term[0]):
             return(pointer, True)
-        else:
-            pointer -= 1
+        pointer -= 1
     return(pointer, False)
 
 
@@ -437,11 +525,22 @@ GENETIC_CODE = {
     "agt": ser,
     "agc": ser,
 
+    "act": thr,
+    "acc": thr,
+    "aca": thr,
+    "acg": thr,
+
     "tat": tyr,
     "tac": tyr,
 
+    "caa": gln,
+    "cag": gln,
+
     "aat": asn,
     "aac": asn,
+
+    "tgt": cys,
+    "tgc": cys
 }
 
 
@@ -452,8 +551,6 @@ def main():
     """
     The main body of the interpreter
     """
-    # pylint: disable=global-statement
-    global BLOCK_SIZE
 
     codon = ""
     main_stack = []
@@ -480,6 +577,8 @@ def main():
         if in_gene:
             # If so, read the next codon
             codon, pointer = read_next_codon(pointer)
+            if VERBOSE:
+                print(codon)
 
             # Do we know what this codon does?
             if codon in GENETIC_CODE:
@@ -489,17 +588,10 @@ def main():
         else:
             # If not, look for a start codon
             pointer, in_gene = look_ahead(pointer, "atg")
-
-            # If we find one, the next codon should be the block size
             pointer += 1
-            codon, pointer = read_next_codon(pointer)
-            BLOCK_SIZE = block_to_int(codon)
-
-            # Note that if we don't find a start codon, the program never
-            # terminates. This is intentional.
 
 
-BLOCK_SIZE = 1
+VERBOSE = False
 
 # Get code, keeping only A, C, G, and T characters
 if len(sys.argv) > 1:

@@ -70,10 +70,16 @@ follows.
   these elements, and place the result on top of the main stack
 
 ### Polar amino acids — Flow control
+* **Cys**: *Jump* – Jump to the next occurrence of the next codon
+* **Asn**: *Loop* – Jump backwards to the previous occurrence of the next codon
 * **Ser**: *Jump if <=0* – If the top element of the main stack is less than or
-  equal to zero, jump to the next **Thr**
-* **Tyr**: *Jump if null* – If the main stack is empty, jump to the next **Gln**
-* **Asn**: *Loop* – Jump backwards to the previous **Cys**
+  equal to zero, jump to the *next* occurrence of the next codon
+* **Thr**: *Loop if <=0* – If the top element of the main stack is less than or
+  equal to zero, jump to the *previous* occurrence of the next codon
+* **Tyr**: *Jump if null* – If the main stack is empty, jump to the next
+  occurrence of the next codon
+* **Gln**: *Loop if null* – If the main stack is empty, jump to the previous
+  occurrence of the next codon
 
 Note that the length of these jumps need not always be a multiple of three. This
 can cause frameshifts, which are half the fun.
@@ -86,23 +92,16 @@ letters A, C, G, and T?"
 "Simple," I reply. "You just express natural numbers in base-4 such that A = 0,
 C = 1, G = 2, and T = 3."
 
-This is also where the block size comes in. The block size is a 3-digit base-4
-number, expressed as described above, that specifies how many codons are in a
-block. For example, a block size of `AAC` allows numbers up to `4**3 - 1` (63) to be
-represented as integer literals, `AAG` up to `4**6 - 1` (4095), and `TTT` up
-to `4**189 - 1` (~6E113). But choosing a larger block size means typing more
-every time you want a number, so choose the balance carefully.
+Since a codon can only be three characters long, this limits integer literals to
+the range `AAA = 0` to `TTT = 63`.
 
 Once stored inside the stack, values are not subject to these same limits, and
-are treated just like ordinary Python integers (which can't handle numbers as
-large as the notation described above theoretically supports; this is a
-shortcoming of the current implementation of the interpreter).
-Negative integers can therefore be constructed by subtracting a natural number
-from zero.
+are treated just like ordinary Python numbers. Larger values, floats, and
+negative numbers can be constructed using mathematical operations.
 
-Unicode characters can be stored as their character reference and converted
-back by arginine. There is no built-in string datatype, only chars (which are
-actually ints) ordered on the stack.
+Unicode characters can be stored as their character reference and converted back
+by arginine. There is no built-in string (or array) datatype, only ints ordered
+on the stack.
 
 ## Examples
 
@@ -115,40 +114,47 @@ unless all A, C, G, and T characters (case-insensitive) are removed from the
 comments; all other comment characters are fine.
 
 ### Hello, world!
-`ATGAAG CATAAAGAC CACAACGCA...CATAACAGA TGTAGATATAATCAA TAG`
-(117 B)
+
+`ATG CATGAC CACTTTCACGCCGGTTTA ... CATTTTCATAGCGGTTTG AGATATATTAATTTG A`
+(Truncated because it's long and boring, actually prints `Hd!`)
 
 Accepts no input; prints `Hello, world!` to STDOUT.
 
 ```
 ATG Start
-AAG Block size = 2
 
 CAT His     Push
-AAA 0 +
-GAC 33 =    33 (ASCII !)
+GAC 33      (ASCII !)
 
-CAC His     Push next block
-AAC 64 +
-GCA 36 =    100 (ASCII d)
+CAC His     Push
+TTT 63
+CAC His     Push
+GCC 37
+GGT Gly     Move
+TTA Leu     Plus (= 100, ASCII d)
 
 ...
 
 CAT His     Push
-AAC 64 +
-AGA 8 =     72 (ASCII H)
+TTT 63
+CAT His     Push
+AGC 9
+GGT Gly     Move
+TTG Leu     Plus (= 72, ASCII H)
 
-TGT Cys     Destination of Asn
 AGA Arg     Pop as char
-TAT Tyr     If stack is empty, jump to Gln
-AAT Asn     Jump back to Cys
-CAA Gln     Destination of Tyr
-
-TAG Stop
+TAT Tyr     Jump if null
+ATT
+AAT Asn     Loop                    ATT
+TTG                                 TGA     End
+A
 ```
 
-### Infinite Fibonacci sequence
-`ATGAAC CATAACGAA GGT TGTGAATTAGGTATGGAAAAAA`
+<!-- TODO: Fix remaining examples for version 3 -->
+
+## Outdated (version 2) examples
+
+### Infinite Fibonacci sequence `ATGAAC CATAACGAA GGT TGTGAATTAGGTATGGAAAAAA`
 (40 B)
 
 Accepts no input; prints an infinite series of newline-separated integers to
