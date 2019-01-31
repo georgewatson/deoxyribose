@@ -606,7 +606,7 @@ def main():
             pointer += 1
 
 
-VERBOSE = True
+VERBOSE = False
 
 # Get code, keeping only A, C, G, and T characters
 if len(sys.argv) > 1:
