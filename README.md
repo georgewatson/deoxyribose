@@ -86,22 +86,17 @@ can cause frameshifts, which are half the fun.
 
 ## Integer literals
 
-"But," I hear you cry, "How am I supposed to represent numbers using only the
-letters A, C, G, and T?"
-
-"Simple," I reply. "You just express natural numbers in base-4 such that A = 0,
-C = 1, G = 2, and T = 3."
-
-Since a codon can only be three characters long, this limits integer literals to
-the range `AAA = 0` to `TTT = 63`.
+Integer literals are expressed as a three-digit number in base-4, such that
+`A` = 0, `C` = 1, `G` = 2, and `T` = 3. This limits integer literals to the
+range `AAA` (0) to `TTT` (63).
 
 Once stored inside the stack, values are not subject to these same limits, and
 are treated just like ordinary Python numbers. Larger values, floats, and
-negative numbers can be constructed using mathematical operations.
+negative numbers can therefore be constructed using mathematical operations.
 
 Unicode characters can be stored as their character reference and converted back
-by arginine. There is no built-in string (or array) datatype, only ints ordered
-on the stack.
+by arginine. There is no built-in string (or array) datatype, nor any real
+distinction between ints and floats, only numbers ordered on the stack.
 
 ## Examples
 
@@ -112,6 +107,12 @@ from the given byte counts.
 The multi-line explanations given below each example will not run as expected
 unless all A, C, G, and T characters (case-insensitive) are removed from the
 comments; all other comment characters are fine.
+
+These examples generally implement a naïve and accessible approach to a problem,
+in order to demonstrate the power and concept of programming in Deoxyribose.
+These solutions may be suboptimal in terms of performance and byte count.
+Golfing them down is left as an exercise to the reader (but the reader is
+encouraged to submit shorter solutions as pull requests!)
 
 ### Hello, world!
 
@@ -210,6 +211,7 @@ TA
 ```
 
 ### Print integers from 1 to N
+
 `ATG GGTCATAACGAAGGTCCT GAAAAACATAACGGTTTATTTGAAGGTGGT GAAATTAGTTAG
 TAGGATAATCCT` (75 B)
 
@@ -247,6 +249,65 @@ TAG End
 GAT Asp     Drop
 AAT Asn     Loop
 CCT
+```
+
+### Primality test
+
+`ATG GAACATAAG GAGGGTGGC GCT CATAACGGT AGTGAC GATGAATTTGGTTTA AATAAG GAAGAC
+GATTTTGATGGTATT AGTTAG CATAAAAAATAG CATAACAA` (107 B)
+
+Accepts one integer greater than 1 as input; prints 1 if prime, 0 if composite.
+
+```
+ATG Start                   AAA Lys     Pop
+
+GAA Glu     Dupe            TGG End
+CAT His     Push
+AAG 2
+
+GAG Glu     Dupe
+GGT Gly     Move
+GGC Gly     Move
+
+GCT Ala     Modulo
+
+CAT His     Push
+AAC 1
+GGT Gly     Move
+
+AGT Ser     Jump if <= 0
+GAC "
+
+GAT Asp     Drop
+
+GAA Glu     Dupe
+TTT Phe     Join
+GGT Gly     Move
+TTA Leu     Plus
+
+AAT Asn     Loop
+AAG "
+
+GAA Glu     Dupe
+GAC Asp     Drop
+
+GAT Asp     Drop
+TTT Phe     Join
+GAT Asp     Drop
+GGT Gly     Move
+ATT Ile     Minus
+
+AGT Ser     Jump if <= 0
+TAG "
+
+CAT His     Push
+AAA 0
+AAA Lys     Pop
+TAG Stop
+
+CAT His     Push
+AAC 1
+AA
 ```
 
 <!-- TODO: Fix remaining examples for version 3 -->
@@ -323,65 +384,6 @@ If the number 1 is necessary, and a frameshift is undesirable, the value must be
 pushed to the stack before the conditional or constructed in some other way
 (e.g. by subtracting 2 from 3).
 This makes life more fun.
-
-### Primality test
-`ATGAAC GAACATAAG TGT GAAGGTGGC GCT CATAACGGT AGT GAT GAATTTGGTTTA AAT ACT GATTTTGATGGTATT AGT CATAAAAAATAG ACT CATAACAA`
-(104 B)
-
-Accepts one integer as input; prints 1 if prime, 0 if composite.
-
-```
-ATG Start                       ..A Lys     Pop as int
-AAC Block size = 1              TGA Stop
-
-GAA Glu     Dupe
-CAT His     Push
-AAG 2
-
-TGT Cys     Destination of Asn
-
-GAA Glu     Dupe
-GGT Gly     Move
-GGC Gly     Move
-
-GCT Ala     Modulo
-
-CAT His     Push
-AAC 1
-GGT Gly     Move
-
-AGT Ser     If <= 0, jump to Thr
-
-GAT Asp     Drop
-
-GAA Glu     Dupe
-TTT Phe     Join
-GGT Gly     Move
-TTA Leu     Plus
-
-AAT Asn     Jump back to Cys
-
-ACT Thr     Destination of Ser
-
-GAT Asp     Drop
-TTT Phe     Join
-GAT Asp     Drop
-GGT Gly     Move
-ATT Ile     Minus
-
-AGT Ser     If <= 0, jump to Thr
-
-CAT His     Push
-AAA 0
-AAA Lys     Pop
-TAG Stop
-
-ACT Thr     Destination of Ser
-
-CAT His     Push
-AAC 1
-AA.         ...loop to start
-```
 
 ## Notes etc.
 
