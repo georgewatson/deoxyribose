@@ -33,9 +33,9 @@ def his(pointer, main_stack, aux_stack):
     Treat next codon as an integer literal in quaternary notation.
     Push the value to the main stack.
     """
-    if VERBOSE:
-        print("His", main_stack, aux_stack)
     codon, pointer = read_next_codon(pointer)
+    if VERBOSE:
+        print("His", main_stack, aux_stack, codon)
     main_stack.append(codon_to_int(codon))
     return(pointer, main_stack, aux_stack)
 
@@ -279,9 +279,9 @@ def ser(pointer, main_stack, aux_stack):
     If the top element of the main stack is <= 0, jump to next occurrence of
     the following codon.
     """
-    if VERBOSE:
-        print("Ser", main_stack, aux_stack)
     term, pointer = read_next_codon(pointer)
+    if VERBOSE:
+        print("Ser", main_stack, aux_stack, term)
     if main_stack and (main_stack[-1] <= 0):
         results = []
         result, success = look_ahead(pointer, term)
@@ -298,16 +298,20 @@ def thr(pointer, main_stack, aux_stack):
     If the top element of the main stack is <= 0, jump back to previous
     occurrence of the following codon.
     """
-    if VERBOSE:
-        print("Thr", main_stack, aux_stack)
     term, _ = read_next_codon(pointer)
+    if VERBOSE:
+        print("Thr", main_stack, aux_stack, term)
     if main_stack and (main_stack[-1] <= 0):
         results = []
         result, success = look_back(pointer, term)
+
         if success:
             results.append(pointer - result)
+
         if results:
             pointer -= min(results) - 1
+        else:
+            pointer += 3
     return(pointer, main_stack, aux_stack)
 
 
@@ -316,9 +320,9 @@ def tyr(pointer, main_stack, aux_stack):
     Tyr
     If main stack is empty, jump to next occurrence of the following codon.
     """
-    if VERBOSE:
-        print("Tyr", main_stack, aux_stack)
     term, pointer = read_next_codon(pointer)
+    if VERBOSE:
+        print("Tyr", main_stack, aux_stack, term)
     if not main_stack:
         results = []
         result, success = look_ahead(pointer, term)
@@ -335,16 +339,20 @@ def gln(pointer, main_stack, aux_stack):
     If the main stack is empty, jump back to previous occurrence of the
     following codon.
     """
-    if VERBOSE:
-        print("Gln", main_stack, aux_stack)
     term, _ = read_next_codon(pointer)
+    if VERBOSE:
+        print("Gln", main_stack, aux_stack, term)
     if not main_stack:
         results = []
         result, success = look_back(pointer, term)
+
         if success:
             results.append(pointer - result)
+
         if results:
             pointer -= min(results) - 1
+        else:
+            pointer += 3
     return(pointer, main_stack, aux_stack)
 
 
@@ -358,10 +366,14 @@ def asn(pointer, main_stack, aux_stack):
         print("Asn", main_stack, aux_stack, term)
     results = []
     result, success = look_back(pointer, term)
+
     if success:
         results.append(pointer - result)
+
     if results:
         pointer -= min(results) - 1
+    else:
+        pointer += 3
     return(pointer, main_stack, aux_stack)
 
 
@@ -372,7 +384,7 @@ def cys(pointer, main_stack, aux_stack):
     """
     term, pointer = read_next_codon(pointer)
     if VERBOSE:
-        print("Cys", main_stack, aux_stack)
+        print("Cys", main_stack, aux_stack, term)
     results = []
     result, success = look_ahead(pointer, term)
     if success:

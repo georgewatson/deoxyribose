@@ -121,7 +121,7 @@ comments; all other comment characters are fine.
 Accepts no input; prints `Hello, world!` to STDOUT.
 
 ```
-ATG Start
+ATG
 
 CAT His     Push
 GAC 33      (ASCII !)
@@ -150,20 +150,16 @@ TTG                                 TGA     End
 A
 ```
 
-<!-- TODO: Fix remaining examples for version 3 -->
+### Infinite Fibonacci sequence
 
-## Outdated (version 2) examples
-
-### Infinite Fibonacci sequence `ATGAAC CATAACGAA GGT TGTGAATTAGGTATGGAAAAAA`
-(40 B)
+`ATG CATAACGAA GGT GAATTAGGCATGGAAAAAAATGGT` (39 B)
 
 Accepts no input; prints an infinite series of newline-separated integers to
 STDOUT. The printed sequence starts at 2, but it would be trivial to add the
 expected `1\n1\n` at the expense of a few more bytes.
 
 ```
-ATG Start                       .AT Asn     Jump back to Cys
-AAC Block size = 1
+ATG
 
 CAT His     Push
 AAC 1
@@ -171,19 +167,19 @@ GAA Glu     Dupe
 
 GGT Gly     Move
 
-TGT Cys     Destination of Asn
 GAA Glu     Dupe
 TTA Leu     Plus
-GGT Gly     Move
+GGC Gly     Move
 ATG Met     Swop
 GAA Glu     Dupe
-AAA Lys     Pop as int
-A..         ...loop to start
+AAA Lys     Pop
+AAT Asn     Loop
+GGT "
 ```
 
 ### Cat
-`ATGAAC TGTGGTTATAATCAA TTT TGTAGATATAATCA`
-(38 B)
+
+`ATG GGTTATTGTAATATGT TTT AGATATTCTAATTTTCTTA` (41 B)
 
 Accepts any number of characters or Unicode codepoints as arguments; prints its
 input to the screen.
@@ -193,42 +189,45 @@ Input containing numbers is fine, but entirely numeric input will be converted
 into the corresponding Unicode character (e.g. input of `100` prints `d`).
 
 ```
-ATG Start                                       ..A Gln     Destination of Tyr
-AAC Block size = 1                              TGA Stop
+ATG
 
-TGT Cys     Destination of Asn
 GGT Gly     Move
-TAT Tyr     If main stack is empty, jump to Gln
-AAT Asn     Jump back to Cys
-CAA Gln     Destination of Tyr
+TAT Tyr     Jump if null
+TGT "
+AAT Asn     Loop
+ATG "
+T
 
 TTT Phe     Join
 
-TGT Cys     Destination of Asn
 AGA Arg     Pop as char
-TAT Tyr     If main stack is empty, jump to Gln
-AAT Asn     Jump back to Cys
-CA.         ...loop to start
+TAT Tyr     Jump if null
+TCT "
+AAT Asn     Loop
+TTT "
+CT
+TA
 ```
 
 ### Print integers from 1 to N
-`ATGAAC GGTCATAAC TGTGAAAAACATAACGGTTTATTTGAAGGTGGT GAAATTAGT TAG ACTGATA`
-(67 B)
+`ATG GGTCATAACGAAGGTCCT GAAAAACATAACGGTTTATTTGAAGGTGGT GAAATTAGTTAG
+TAGGATAATCCT` (75 B)
 
 Accepts an integer *N* as input; prints all integers from 1 to *N* to STDOUT,
 separated by newlines.
 
 ```
-ATG Start                               .AT Asn     Jump back to Cys
-AAC Block size = 1
+ATG
 
 GGT Gly     Move
 CAT His     Push
 AAC 1
-
-TGT Cys     Destination of Asn
 GAA Glu     Dupe
-AAA Lys     Pop as int
+GGT Gly     Move
+CCT Pro     Divide
+
+GAA Glu     Dupe
+AAA Lys     Pop
 CAT His     Push
 AAC 1
 GGT Gly     Move
@@ -240,14 +239,19 @@ GGT Gly     Move
 
 GAA Glu     Dupe
 ATT Ile     Minus
-AGT Ser     If <= 0, jump to next Thr
+AGT Ser     Jump if <= 0
+TAG
 
-TAG Stop
+TAG End
 
-ACT Thr     Destination of Ser
 GAT Asp     Drop
-A..         ...loop to start
+AAT Asn     Loop
+CCT
 ```
+
+<!-- TODO: Fix remaining examples for version 3 -->
+
+## Outdated (version 2) examples
 
 ### Truth machine
 `ATGTGAGAAAAATCTAACTTA`
