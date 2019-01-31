@@ -33,10 +33,10 @@ The operators are defined by their correspondence to particular amino acids, as
 follows.
 
 ### Special codons
-* `ATG`: Start program execution. Everything before this codon is ignored, and
+* **Start** (`ATG`): Start program execution. Everything before this codon is ignored, and
   it is expected that the next codon will define the "block size" (see below);
   this codon also codes for methionine
-* `TAG`, `TAA`, and `TGA`: Stop; exit the program and return 0.
+* **Stop** (`TAG`, `TAA`, and `TGA`): *End* program execution & return 0
 
 ### Charged amino acids — Single-stack operations
 * **His**: *Push* next block (expressed in quaternary notation, see below) to the
@@ -70,15 +70,15 @@ follows.
   these elements, and place the result on top of the main stack
 
 ### Polar amino acids — Flow control
-* **Cys**: *Jump* – Jump to the next occurrence of the next codon
-* **Asn**: *Loop* – Jump backwards to the previous occurrence of the next codon
+* **Cys**: *Jump* – Jump to the *next* occurrence of the next codon
+* **Asn**: *Loop* – Jump backwards to the *previous* occurrence of the next codon
 * **Ser**: *Jump if <=0* – If the top element of the main stack is less than or
   equal to zero, jump to the *next* occurrence of the next codon
 * **Thr**: *Loop if <=0* – If the top element of the main stack is less than or
   equal to zero, jump to the *previous* occurrence of the next codon
-* **Tyr**: *Jump if null* – If the main stack is empty, jump to the next
+* **Tyr**: *Jump if null* – If the main stack is empty, jump to the *next*
   occurrence of the next codon
-* **Gln**: *Loop if null* – If the main stack is empty, jump to the previous
+* **Gln**: *Loop if null* – If the main stack is empty, jump to the *previous*
   occurrence of the next codon
 
 Note that the length of these jumps need not always be a multiple of three. This
@@ -310,80 +310,34 @@ AAC 1
 AA
 ```
 
-<!-- TODO: Fix remaining examples for version 3 -->
-
-## Outdated (version 2) examples
-
 ### Truth machine
-`ATGTGAGAAAAATCTAACTTA`
-(21 B)
 
-Accepts one integer as input.
-If this value is less than or equal to 0, it is printed once before the program
-terminates.
-If the value is greater than 0, it is printed infinitely.
+`ATG GAG AAG AGC ATA AAT` (18 B)
+
+Accepts one value as input. If this value is less than or equal to 0, it is
+printed once before the program terminates. If the value is greater than 0, it
+is printed infinitely.
 
 ```
-ATG Start                           TAA Stop
-TGA Block size = 56                 TGT Cys     Destination of Asn
-GAA Glu     Dupe               GAG Glu     Dupe
-AAA Lys     Pop as int              AAA Lys     Pop as int
-TCT Ser     If <= 0, jump to Thr    AAT Asn     Jump back to Cys
-AAC Asn     Jump back to Cys
-TTA                                 ACT Thr     Destination of Ser
+ATG                         ATA
+GAG Glu     Dupe            TGG Trp     Power
+AAG Lys     Pop             AGA Arg     Unipop
+AGC Ser     Jump if <= 0    AGA Arg     Unipop
+ATA "                       GCA Ala     Modulo
+AAT Asn     Loop            TAA End
 ```
-This code is heavily golfed, making liberal use of frameshifts for maximum
-compression.
 
-Execution starts at the initial ATG.
-There are no integer literals anywhere, so the block size is meaningless and can
-be used for other purposes — more on that later.
-The top stack element is printed, then the magic happens.
-* If the top stack element (the user input) is zero, we jump forward to the `ACT`
-  formed by Asn and the following `TTA` (which would code for Leu, but is never
-  actually read in this reference frame), resulting in a frameshift.
-  Looping back to the start forms the stop codon `TAA`.
-* If the top stack element is 1, we continue reading to Asn, which searches
-  backwards for a Cys. This is found in the `TGT` formed by the start codon and
-  the block size, so we jump back there, frameshifted.
-  We now enter a tighter, less complex loop, which simply prints the top stack
-  element indefinitely.
+* Execution starts at the initial ATG.
+* The top element of the main stack is duplicated & printed, then
+    * If the value is less than or equal to zero, jump to the ATA formed by the
+      Asn and the start codon (remember, the code is circular), then run
+      through a series of no-ops, including printing some non-printable
+      characters.
+    * If the value is greater than 0, loop back to the start.
 
-As this demonstrates, frameshifts and degeneracy are powerful tools that allow
-the same base sequence to do two (or more!) totally different things.
-
-Note that the code
-`ATGAAC TCT TGTCATAACAAAAAT ACTTAG`
-(30 B)
-```
-ATG Start
-AAC Block size = 1
-
-TCT Ser     If <= 0, jump to Thr
-
-TGT Cys     Destination of Asn
-CAT His     Push
-AAC 1
-AAA Lys     Pop as int
-AAT Asn     Jump back to Cys
-
-ACT Thr     Destination of Ser
-TAG Stop
-```
-doesn't look like it would print on an input of zero, but actually does because
-of a frameshift: The `ACA` formed by the numeric literal 1 and
-the following Lys is recognised as the destination of the Ser → Thr jump, then
-the frame-shifted `AAA` immediately following is interpreted as a Lysine; the code
-then runs through a series of invisible operations (Ile, Leu, Arg) before looping
-back to the start and terminating on the `TGA` formed by the start and block
-size codons.
-
-In fact, a numeric literal 1 cannot appear anywhere between Ser and Thr, since
-all `ACN` codons translate to Thr, causing a frameshift.
-If the number 1 is necessary, and a frameshift is undesirable, the value must be
-pushed to the stack before the conditional or constructed in some other way
-(e.g. by subtracting 2 from 3).
-This makes life more fun.
+If you don't like the ugly sequence of no-ops, adding `ATG` to the end to make
+the loop target explicit results in a clean termination immediately after the
+jump, for three more bytes.
 
 ## Notes etc.
 

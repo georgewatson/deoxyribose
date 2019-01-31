@@ -56,13 +56,16 @@ def lys(pointer, main_stack, aux_stack):
 def arg(pointer, main_stack, aux_stack):
     """
     Arg
-    If the main stack is non-empty, pop the top element, round it towards zero,
-    take the absolute value, and print it as a Unicode character.
+    If the main stack is non-empty, pop the top element.
+    If it is positive, round it towards zero and print it as a Unicode
+    character.
     """
     if VERBOSE:
         print("Arg", main_stack, aux_stack)
     if main_stack:
-        sys.stdout.write(str(chr(abs(int(main_stack.pop())))))
+        char = int(main_stack.pop())
+        if char >= 0:
+            sys.stdout.write(str(chr(char)))
     return(pointer, main_stack, aux_stack)
 
 
@@ -603,7 +606,7 @@ def main():
             pointer += 1
 
 
-VERBOSE = False
+VERBOSE = True
 
 # Get code, keeping only A, C, G, and T characters
 if len(sys.argv) > 1:
