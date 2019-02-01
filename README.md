@@ -26,7 +26,8 @@ the codon–amino acid correspondence, can allow some very fun and exciting
 things.
 
 The name of the language was selected due to being the "most-DNA-y" word that
-doesn't contain an A, C, G, or T, meaning it can be included in a comment.
+doesn't contain an A, C, G, or T, meaning it can be included in a comment or
+shebang (`#! /usr/bin/env deoxyribose` is a valid comment).
 
 ## Amino acids (operators)
 
@@ -161,8 +162,7 @@ expected `1\n1\n` at the expense of a few more bytes.
 ```
 ATG
 
-CAT His     Push
-AAC 1
+CCT Pro     Divide (yields 1)
 GAA Glu     Dupe
 
 GGT Gly     Move
