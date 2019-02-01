@@ -22,7 +22,8 @@ bacterial genome).
 Any amount of information can be placed before the first start codon, and if no
 stop codon is found, execution will loop around to the very beginning.
 Clever use of the frameshifts this can lead to, combined with the degeneracy of
-the codon–amino acid correspondence, can allow some very fun and exciting things.
+the codon–amino acid correspondence, can allow some very fun and exciting
+things.
 
 The name of the language was selected due to being the "most-DNA-y" word that
 doesn't contain an A, C, G, or T, meaning it can be included in a comment.
@@ -33,45 +34,44 @@ The operators are defined by their correspondence to particular amino acids, as
 follows.
 
 ### Special codons
-* **Start** (`ATG`): Start program execution. Everything before this codon is ignored, and
-  it is expected that the next codon will define the "block size" (see below);
-  this codon also codes for methionine
+* **Start** (`ATG`): Start program execution
 * **Stop** (`TAG`, `TAA`, and `TGA`): *End* program execution & return 0
 
 ### Charged amino acids — Single-stack operations
-* **His**: *Push* next block (expressed in quaternary notation, see below) to the
-  top of the main stack
+* **His**: *Push* next codon (expressed in quaternary notation, see below) to
+  the top of the main stack
 * **Lys**: *Pop* top of main stack to standard output as a number
 * **Arg**: *Pop* top of main stack to standard output as a Unicode character
 * **Glu**: *Dupe* (duplicate) the top element of the main stack
 * **Asp**: *Drop* the top element of the main stack
 
 ### Non-polar amino acids — Two-stack operations
-* **Leu**: *Plus* (add) the top elements of the main and auxiliary stacks, remove these
-  elements, and place the result on top of the main stack
-* **Ile**: *Minus* (subtract) the top element of the auxiliary stack from the top element
-  of the main stack, remove these elements, and place the result on top of the
-  main stack
-* **Val**: *Mul* (multiply) the top elements of the main and auxiliary stacks, remove
-  these elements, and place the result on top of the main stack
+* **Leu**: *Plus* (add) the top elements of the main and auxiliary stacks,
+  remove these elements, and place the result on top of the main stack
+* **Ile**: *Minus* (subtract) the top element of the auxiliary stack from the
+  top element of the main stack, remove these elements, and place the result on
+  top of the main stack
+* **Val**: *Mul* (multiply) the top elements of the main and auxiliary stacks,
+  remove these elements, and place the result on top of the main stack
 * **Pro**: *Divide* the top element of the main stack by the top element
   of the auxiliary stack, round the result towards zero, remove these elements,
   and place the result on top of the main stack
 * **Met**: *Swop* (swap) the top elements of the main and auxiliary stacks
-* **Phe**: *Join* (concatenate) the main and auxiliary stacks, leaving the auxiliary
-  stack empty
+* **Phe**: *Join* (concatenate) the main and auxiliary stacks by placing the
+  auxiliary stack on top of the main stack, leaving the auxiliary stack empty
 * **Gly**: *Move* the top element of the main stack to the top of the auxiliary
   stack
-* **Trp**: *Power* (exponentiate) the top element of the main stack to the power of the
-  top element of the auxiliary stack, remove these elements, and place the
-  result on top of the main stack
+* **Trp**: *Power* (exponentiate) the top element of the main stack to the power
+  of the top element of the auxiliary stack, remove these elements, and place
+  the result on top of the main stack
 * **Ala**: *Modulo* — calculate the remainder when the top element of the main
   stack is divided by the top element of the auxiliary stack, remove both of
   these elements, and place the result on top of the main stack
 
 ### Polar amino acids — Flow control
 * **Cys**: *Jump* – Jump to the *next* occurrence of the next codon
-* **Asn**: *Loop* – Jump backwards to the *previous* occurrence of the next codon
+* **Asn**: *Loop* – Jump backwards to the *previous* occurrence of the next
+  codon
 * **Ser**: *Jump if <=0* – If the top element of the main stack is less than or
   equal to zero, jump to the *next* occurrence of the next codon
 * **Thr**: *Loop if <=0* – If the top element of the main stack is less than or
@@ -112,17 +112,17 @@ These examples generally implement a naïve and accessible approach to a problem
 in order to demonstrate the power and concept of programming in Deoxyribose.
 These solutions may be suboptimal in terms of performance and byte count.
 Golfing them down is left as an exercise to the reader (but the reader is
-encouraged to submit shorter solutions as pull requests!)
+encouraged to submit shorter solutions as pull requests).
 
 ### Hello, world!
 
-`ATG CATGAC CACTTTCACGCCGGTTTA ... CATTTTCATAGCGGTTTG AGATATATTAATTTG A`
+`ATG CATGAC CACTTTCACGCCGGTTTA ... CATTTTCATAGCGGTTTG AGATATATTAATTTG`
 (Truncated because it's long and boring, actually prints `Hd!`)
 
 Accepts no input; prints `Hello, world!` to STDOUT.
 
 ```
-ATG
+ATG                                 TGA End
 
 CAT His     Push
 GAC 33      (ASCII !)
@@ -146,9 +146,8 @@ TTG Leu     Plus (= 72, ASCII H)
 AGA Arg     Pop as char
 TAT Tyr     Jump if null
 ATT
-AAT Asn     Loop                    ATT
-TTG                                 TGA     End
-A
+AAT Asn     Loop
+TTG                                 ATT
 ```
 
 ### Infinite Fibonacci sequence
@@ -341,9 +340,9 @@ jump, for three more bytes.
 
 ## Notes etc.
 
-This is very much a work in progress, and there are some very poor aspects of the
-design that will likely be changed in backwards-incompatible ways in future
-versions. I would welcome suggestions.
+This is very much a work in progress, and some aspects of the design will
+probably be changed in backwards-incompatible ways in future versions. I would
+welcome suggestions.
 
 The specification and documentation for this project are dual-licensed under a
 [CC-BY](https://creativecommons.org/licenses/by/3.0) licence and the MIT licence

@@ -2,7 +2,7 @@
 
 """
 DEOXYRIBOSE INTERPRETER
-George Watson, 2018
+George Watson, 2018-2019
 https://georgewatson.me
 Released under an MIT licence
 """
@@ -65,7 +65,11 @@ def arg(pointer, main_stack, aux_stack):
     if main_stack:
         char = int(main_stack.pop())
         if char >= 0:
-            sys.stdout.write(str(chr(char)))
+            try:
+                sys.stdout.write(str(chr(char)))
+            # If the value is too large, don't print it
+            except OverflowError:
+                pass
     return(pointer, main_stack, aux_stack)
 
 
@@ -177,11 +181,15 @@ def pro(pointer, main_stack, aux_stack):
         a = int(main_stack.pop())
     else:
         a = 1
-    if aux_stack:
+    if aux_stack and aux_stack[-1] != 0:
         b = int(aux_stack.pop())
     else:
         b = 1
-    main_stack.append(a / b)
+    try:
+        main_stack.append(a / b)
+    # Fall back to integer division if the result doesn't fit in a float
+    except OverflowError:
+        main_stack.append(a // b)
     return(pointer, main_stack, aux_stack)
 
 
@@ -246,7 +254,9 @@ def trp(pointer, main_stack, aux_stack):
         b = aux_stack.pop()
     else:
         b = 0
-    main_stack.append(a ** b)
+    # If trying to raise 0 to a negative power, act as a no-op
+    if (a != 0 or b >= 0):
+        main_stack.append(a ** b)
     return(pointer, main_stack, aux_stack)
 
 
@@ -265,7 +275,7 @@ def ala(pointer, main_stack, aux_stack):
         a = int(main_stack.pop())
     else:
         a = 0
-    if aux_stack:
+    if aux_stack and aux_stack[-1] != 0:
         b = int(aux_stack.pop())
     else:
         b = 1
@@ -567,7 +577,6 @@ def main():
     The main body of the interpreter
     """
 
-    codon = ""
     main_stack = []
     aux_stack = []
     in_gene = False
@@ -602,6 +611,7 @@ def main():
                     pointer, main_stack, aux_stack)
         else:
             # If not, look for a start codon
+            # If we can't find one, loop forever. This is deliberate.
             pointer, in_gene = look_ahead(pointer, "atg")
             pointer += 1
 
