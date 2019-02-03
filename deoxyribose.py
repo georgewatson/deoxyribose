@@ -68,7 +68,7 @@ def arg(pointer, main_stack, aux_stack):
             try:
                 sys.stdout.write(str(chr(char)))
             # If the value is too large, don't print it
-            except OverflowError:
+            except (ValueError, OverflowError, UnicodeEncodeError):
                 pass
     return(pointer, main_stack, aux_stack)
 
@@ -181,7 +181,7 @@ def pro(pointer, main_stack, aux_stack):
         a = int(main_stack.pop())
     else:
         a = 1
-    if aux_stack and aux_stack[-1] != 0:
+    if aux_stack:
         b = int(aux_stack.pop())
     else:
         b = 1
@@ -190,6 +190,8 @@ def pro(pointer, main_stack, aux_stack):
     # Fall back to integer division if the result doesn't fit in a float
     except OverflowError:
         main_stack.append(a // b)
+    except ZeroDivisionError:
+        main_stack.append(a)
     return(pointer, main_stack, aux_stack)
 
 
@@ -256,7 +258,10 @@ def trp(pointer, main_stack, aux_stack):
         b = 0
     # If trying to raise 0 to a negative power, act as a no-op
     if (a != 0 or b >= 0):
-        main_stack.append(a ** b)
+        try:
+            main_stack.append(a ** b)
+        except OverflowError:
+            pass
     return(pointer, main_stack, aux_stack)
 
 
@@ -279,7 +284,10 @@ def ala(pointer, main_stack, aux_stack):
         b = int(aux_stack.pop())
     else:
         b = 1
-    main_stack.append(a % b)
+    try:
+        main_stack.append(a % b)
+    except ZeroDivisionError:
+        pass
     return(pointer, main_stack, aux_stack)
 
 
