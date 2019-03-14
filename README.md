@@ -338,14 +338,31 @@ If you don't like the ugly sequence of no-ops, adding `ATG` to the end to make
 the loop target explicit results in a clean termination immediately after the
 jump, for three more bytes.
 
-## Notes etc.
+## Note
 
 This is very much a work in progress, and some aspects of the design will
 probably be changed in backwards-incompatible ways in future versions. I would
 welcome suggestions.
 
+## Licensing
+
 The specification and documentation for this project are dual-licensed under a
-[CC-BY](https://creativecommons.org/licenses/by/3.0) licence and the MIT licence
-(see the `LICENSE` file), and the interpreter etc. are under an MIT licence.
-I'd love to see them developed and improved upon, but it would be nice to see my
-name on there somewhere.
+[CC-BY](https://creativecommons.org/licenses/by/3.0) licence and the MIT
+Licence, and the interpreter etc. are under the MIT Licence.
+See the `LICENSE` file for more information.
+
+This allows you to do whatever you want with the software,
+free of charge,
+including making modifications and distributing it commercially,
+provided you retain the contents of the (very short) `LICENSE` file
+in an appropriate place in all copies you distribute.
+This file includes an attribution to the authors of this repository.
+
+All potential contributors are expected to license their contributions under
+the same licence,
+and *may* add their names to the copyright notice in a pull request.
+
+Although no patents are, at present, claimed on this software,
+for the avoidance of doubt,
+the "without limitation" line in the license text is considered by the authors
+to be an explicit licence of any relevant patents.
