@@ -338,6 +338,41 @@ If you don't like the ugly sequence of no-ops, adding `ATG` to the end to make
 the loop target explicit results in a clean termination immediately after the
 jump, for three more bytes.
 
+### A polyglot
+
+```fortran
+program polyglot
+
+    real :: big_number = 1764.0, arnold
+    integer :: ounces_in_a_ton = 42
+
+    if (.true.) then
+        print *, ounces_in_a_ton, "is a cunning number"
+    else
+        arnold = sqrt(big_number)
+    end if
+
+    contains
+
+    subroutine count_elements(array, num)
+
+        real, dimension (:) :: array
+        integer :: num
+
+        num = size(array)
+
+    end subroutine count_elements
+
+end program polyglot
+```
+
+When interpreted as Fortran,
+this rather stupid program prints
+`42 is a cunning number`.
+However, a secret code has been hidden within,
+which only a deoxyribose interpreter can unveil.
+Deciphering it is an exercise for the reader.
+
 ## Note
 
 This is very much a work in progress, and some aspects of the design will
