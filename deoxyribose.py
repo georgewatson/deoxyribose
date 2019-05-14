@@ -484,96 +484,96 @@ def look_back(pointer, search_term):
 
 # Define genetic code table
 GENETIC_CODE = {
-    "taa": stop,  # ochre
-    "tag": stop,  # amber
-    "tga": stop,  # opal
+    'taa': stop,  # ochre
+    'tag': stop,  # amber
+    'tga': stop,  # opal
 
     # Charged amino acids: Single-stack operations
 
-    "cat": his,
-    "cac": his,
+    'cat': his,
+    'cac': his,
 
-    "aaa": lys,
-    "aag": lys,
+    'aaa': lys,
+    'aag': lys,
 
-    "cgt": arg,
-    "cgc": arg,
-    "cga": arg,
-    "cgg": arg,
-    "aga": arg,
-    "agg": arg,
+    'cgt': arg,
+    'cgc': arg,
+    'cga': arg,
+    'cgg': arg,
+    'aga': arg,
+    'agg': arg,
 
-    "gaa": glu,
-    "gag": glu,
+    'gaa': glu,
+    'gag': glu,
 
-    "gat": asp,
-    "gac": asp,
+    'gat': asp,
+    'gac': asp,
 
     # Non-polar amino acids: Two-stack operations
 
-    "tta": leu,
-    "ttg": leu,
-    "ctt": leu,
-    "ctc": leu,
-    "cta": leu,
-    "ctg": leu,
+    'tta': leu,
+    'ttg': leu,
+    'ctt': leu,
+    'ctc': leu,
+    'cta': leu,
+    'ctg': leu,
 
-    "att": ile,
-    "atc": ile,
-    "ata": ile,
+    'att': ile,
+    'atc': ile,
+    'ata': ile,
 
-    "gtt": val,
-    "gtc": val,
-    "gta": val,
-    "gtg": val,
+    'gtt': val,
+    'gtc': val,
+    'gta': val,
+    'gtg': val,
 
-    "cct": pro,
-    "ccc": pro,
-    "cca": pro,
-    "ccg": pro,
+    'cct': pro,
+    'ccc': pro,
+    'cca': pro,
+    'ccg': pro,
 
-    "atg": met,
+    'atg': met,
 
-    "ttt": phe,
-    "ttc": phe,
+    'ttt': phe,
+    'ttc': phe,
 
-    "ggt": gly,
-    "ggc": gly,
-    "gga": gly,
-    "ggg": gly,
+    'ggt': gly,
+    'ggc': gly,
+    'gga': gly,
+    'ggg': gly,
 
-    "tgg": trp,
+    'tgg': trp,
 
-    "gct": ala,
-    "gcc": ala,
-    "gca": ala,
-    "gcg": ala,
+    'gct': ala,
+    'gcc': ala,
+    'gca': ala,
+    'gcg': ala,
 
     # Polar amino acids: Flow control
 
-    "tct": ser,
-    "tcc": ser,
-    "tca": ser,
-    "tcg": ser,
-    "agt": ser,
-    "agc": ser,
+    'tct': ser,
+    'tcc': ser,
+    'tca': ser,
+    'tcg': ser,
+    'agt': ser,
+    'agc': ser,
 
-    "act": thr,
-    "acc": thr,
-    "aca": thr,
-    "acg": thr,
+    'act': thr,
+    'acc': thr,
+    'aca': thr,
+    'acg': thr,
 
-    "tat": tyr,
-    "tac": tyr,
+    'tat': tyr,
+    'tac': tyr,
 
-    "caa": gln,
-    "cag": gln,
+    'caa': gln,
+    'cag': gln,
 
-    "aat": asn,
-    "aac": asn,
+    'aat': asn,
+    'aac': asn,
 
-    "tgt": cys,
-    "tgc": cys
+    'tgt': cys,
+    'tgc': cys
 }
 
 
@@ -620,7 +620,7 @@ def main():
         else:
             # If not, look for a start codon
             # If we can't find one, loop forever. This is deliberate.
-            pointer, in_gene = look_ahead(pointer, "atg")
+            pointer, in_gene = look_ahead(pointer, 'atg')
             pointer += 1
 
 
@@ -628,12 +628,12 @@ VERBOSE = False
 
 # Get code, keeping only A, C, G, and T characters
 if len(sys.argv) > 1:
-    CHROMOSOME = re.sub('[^acgt]', '', sys.argv[1].lower())
+    CHROMOSOME = re.sub(r'[^acgt]', '', sys.argv[1].lower())
 else:
     # If no program was specified as an argument, accept from standard input
     while True:
-        USER_INPUT = "".join([i for i in sys.stdin])
-        CHROMOSOME = re.sub('[^acgt]', '', USER_INPUT.lower())
+        USER_INPUT = ''.join([i for i in sys.stdin])
+        CHROMOSOME = re.sub(r'[^acgt]', '', USER_INPUT.lower())
 
 # Run interpreter
 main()
