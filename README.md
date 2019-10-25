@@ -55,7 +55,7 @@ follows.
 * **Val**: *Mul* (multiply) the top elements of the main and auxiliary stacks,
   remove these elements, and place the result on top of the main stack
 * **Pro**: *Divide* the top element of the main stack by the top element
-  of the auxiliary stack, round the result towards zero, remove these elements,
+  of the auxiliary stack, remove these elements,
   and place the result on top of the main stack
 * **Phe**: *Join* (concatenate) the main and auxiliary stacks by placing the
   auxiliary stack on top of the main stack, leaving the auxiliary stack empty
@@ -98,6 +98,25 @@ negative numbers can therefore be constructed using mathematical operations.
 Unicode characters can be stored as their character reference and converted back
 by arginine. There is no built-in string (or array) datatype, nor any real
 distinction between ints and floats, only numbers ordered on the stack.
+
+## Variables
+
+Deoxyribose programs primarily store values in two stacks,
+usually referred to as the main and auxiliary stacks.
+Operations are applied to the values on top of one or both of these stacks,
+and a number of operations are dedicated to shunting values between them.
+
+In addition,
+as of Deoxyribose 3.0,
+it is possible to declare up to 64 variables
+with single-codon names.
+Each variable can hold a single integer,
+which must be read back into the stack in order to be operated on.
+This significantly simplifies many algorithms,
+but makes everything a bit less fun.
+Every use of a variable requires at least four codons,
+and the variable operations correspond to the two least degenerate amino acids,
+so they should be used sparingly in golfy code.
 
 ## Examples
 
@@ -153,7 +172,7 @@ TTG
 
 ### Infinite Fibonacci sequence
 
-`ATG CCTGAA GGT GAATTATGGAAAGGCATGAAAGAAAAAAATGGT` (45 B)
+`ATG CCTGAA GGT GAATTA TGGAAA GGC ATGAAA GAAAAA AATGGT` (45 B)
 
 Accepts no input; prints an infinite series of newline-separated integers to
 STDOUT. The printed sequence starts at 2, but it would be trivial to add the
