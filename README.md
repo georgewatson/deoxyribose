@@ -46,7 +46,7 @@ follows.
 * **Glu**: *Dupe* (duplicate) the top element of the main stack
 * **Asp**: *Drop* the top element of the main stack
 
-### Non-polar amino acids — Two-stack operations
+### Non-polar amino acids — Two-stack/variable operations
 * **Leu**: *Plus* (add) the top elements of the main and auxiliary stacks,
   remove these elements, and place the result on top of the main stack
 * **Ile**: *Minus* (subtract) the top element of the auxiliary stack from the
@@ -55,19 +55,19 @@ follows.
 * **Val**: *Mul* (multiply) the top elements of the main and auxiliary stacks,
   remove these elements, and place the result on top of the main stack
 * **Pro**: *Divide* the top element of the main stack by the top element
-  of the auxiliary stack, round the result towards zero, remove these elements,
+  of the auxiliary stack, remove these elements,
   and place the result on top of the main stack
-* **Met**: *Swop* (swap) the top elements of the main and auxiliary stacks
 * **Phe**: *Join* (concatenate) the main and auxiliary stacks by placing the
   auxiliary stack on top of the main stack, leaving the auxiliary stack empty
 * **Gly**: *Move* the top element of the main stack to the top of the auxiliary
   stack
-* **Trp**: *Power* (exponentiate) the top element of the main stack to the power
-  of the top element of the auxiliary stack, remove these elements, and place
-  the result on top of the main stack
 * **Ala**: *Modulo* — calculate the remainder when the top element of the main
   stack is divided by the top element of the auxiliary stack, remove both of
   these elements, and place the result on top of the main stack
+* **Trp**: *Keep* (store) the top element of the main stack in the variable
+  named by the next codon; using with an empty stack clears the variable
+* **Met**:  *Reed* (read) the variable named by the next codon, and move its
+  value to the top of the main stack; this clears the variable
 
 ### Polar amino acids — Flow control
 * **Cys**: *Jump* – Jump to the *next* occurrence of the next codon
@@ -99,6 +99,25 @@ Unicode characters can be stored as their character reference and converted back
 by arginine. There is no built-in string (or array) datatype, nor any real
 distinction between ints and floats, only numbers ordered on the stack.
 
+## Variables
+
+Deoxyribose programs primarily store values in two stacks,
+usually referred to as the main and auxiliary stacks.
+Operations are applied to the values on top of one or both of these stacks,
+and a number of operations are dedicated to shunting values between them.
+
+In addition,
+as of Deoxyribose 3.0,
+it is possible to declare up to 64 variables
+with single-codon names.
+Each variable can hold a single integer,
+which must be read back into the stack in order to be operated on.
+This significantly simplifies many algorithms,
+but makes everything a bit less fun.
+Every use of a variable requires at least four codons,
+and the variable operations correspond to the two least degenerate amino acids,
+so they should be used sparingly in golfy code.
+
 ## Examples
 
 Note that the examples below include spaces to separate segments of the code for
@@ -123,63 +142,71 @@ encouraged to submit shorter solutions as pull requests).
 Accepts no input; prints `Hello, world!` to STDOUT.
 
 ```
-ATG                                 TGA End
+ATG ==>                     End
 
-CAT His     Push
-GAC 33      (ASCII !)
+CAT Push
+GAC 33 (!)
 
-CAC His     Push
+CAC Push
 TTT 63
-CAC His     Push
+CAC Push
 GCC 37
-GGT Gly     Move
-TTA Leu     Plus (= 100, ASCII d)
+GGT Move
+TTA Plus (= 100, d)
 
 ...
 
-CAT His     Push
+CAT Push
 TTT 63
-CAT His     Push
+CAT Push
 AGC 9
-GGT Gly     Move
-TTG Leu     Plus (= 72, ASCII H)
+GGT Move
+TTG Plus (= 72, H)
 
-AGA Arg     Pop as char
-TAT Tyr     Jump if null
-ATT
-AAT Asn     Loop
-TTG                                 ATT
+AGA Pop
+TAT Jump if null
+ATT *
+AAT Loop                    *
+TTG
 ```
 
 ### Infinite Fibonacci sequence
 
-`ATG CATAACGAA GGT GAATTAGGCATGGAAAAAAATGGT` (39 B)
+`ATG CCTGAA GGT GAATTA TGGAAA GGC ATGAAA GAAAAA AATGGT` (45 B)
 
 Accepts no input; prints an infinite series of newline-separated integers to
 STDOUT. The printed sequence starts at 2, but it would be trivial to add the
 expected `1\n1\n` at the expense of a few more bytes.
 
 ```
-ATG
+ATG ==>
 
-CCT Pro     Divide (yields 1)
-GAA Glu     Dupe
+CCT Divide (yields 1)
+GAA Dupe
 
-GGT Gly     Move
+GGT Move
+ *
+GAA Dupe
+TTA Plus
 
-GAA Glu     Dupe
-TTA Leu     Plus
-GGC Gly     Move
-ATG Met     Swop
-GAA Glu     Dupe
-AAA Lys     Pop
-AAT Asn     Loop
-GGT "
+TGG Keep
+AAA b
+
+GGC Move
+
+ATG Reed
+AAA b
+
+GAA Dupe
+AAA Pop
+
+AAT Loop
+GGT <- *
 ```
 
 ### Cat
 
-`ATG GGTTATTGTAATATGT TTT AGATATTCTAATTTTCTTA` (41 B)
+`ATG GGT TATTGT AATATGT TTT AGA TATTCT AATTTTCT TA` (41 B)
 
 Accepts any number of characters or Unicode codepoints as arguments; prints its
 input to the screen.
@@ -189,141 +216,137 @@ Input containing numbers is fine, but entirely numeric input will be converted
 into the corresponding Unicode character (e.g. input of `100` prints `d`).
 
 ```
-ATG
-
-GGT Gly     Move
-TAT Tyr     Jump if null
-TGT "
-AAT Asn     Loop
-ATG "
-T
-
-TTT Phe     Join
-
-AGA Arg     Pop as char
-TAT Tyr     Jump if null
-TCT "
-AAT Asn     Loop
-TTT "
-CT
-TA
+  ATG GGT TATTGT AATATGT TTT AGA TATTCT AATTTTCT TA
+      ^                  *   %                   +
+0 ==> Mov IfN->* Loop<^                          End
++1                       Joi Uni IfN->+ Loop<%
 ```
 
 ### Print integers from 1 to N
 
-`ATG GGTCATAACGAAGGTCCT GAAAAACATAACGGTTTATTTGAAGGTGGT GAAATTAGTTAG
-TAGGATAATCCT` (75 B)
+`ATG GGT CATAAC GAAGGTCCT GAAAAA CATAAC GGTTTATTTGAAGGTGGT GAAATT AGTTAG
+TAG GAT AATCCT` (75 B)
 
 Accepts an integer *N* as input; prints all integers from 1 to *N* to STDOUT,
 separated by newlines.
 
 ```
-ATG
+ATG ==>
 
-GGT Gly     Move
-CAT His     Push
+GGT Move
+
+CAT Push
 AAC 1
-GAA Glu     Dupe
-GGT Gly     Move
-CCT Pro     Divide
 
-GAA Glu     Dupe
-AAA Lys     Pop
-CAT His     Push
+GAA Dupe
+GGT Move
+CCT Divide
+ +
+GAA Dupe
+AAA Pop
+
+CAT Push
 AAC 1
-GGT Gly     Move
-TTA Leu     Plus
-TTT Phe     Join
-GAA Glu     Dupe
-GGT Gly     Move
-GGT Gly     Move
 
-GAA Glu     Dupe
-ATT Ile     Minus
-AGT Ser     Jump if <= 0
-TAG
+GGT Move
+TTA Plus
+TTT Join
+GAA Dupe
+GGT Move
+GGT Move
+
+GAA Dupe
+ATT Minus
+
+AGT Jump if <= 0
+TAG -> *
 
 TAG End
+ *
+GAT Drop
 
-GAT Asp     Drop
-AAT Asn     Loop
-CCT
+AAT Loop
+CCT <- +
 ```
 
 ### Primality test
 
-`ATG GAACATAAG GAGGGTGGC GCT CATAACGGT AGTGAC GATGAATTTGGTTTA AATAAG GAAGAC
-GATTTTGATGGTATT AGTTAG CATAAAAAATAG CATAACAA` (107 B)
+`ATG GAA CATAAG GAGGGTGGC GCT CATAAC GGT AGTGAC GAT GAATTTGGTTTA AATAAG GAAGAC
+GATTTTGATGGTATT AGTTAG CATAAA AAA TAG CATAAC AA` (107 B)
 
 Accepts one integer greater than 1 as input; prints 1 if prime, 0 if composite.
 
 ```
-ATG Start                   AAA Lys     Pop
+    0            +1
+ATG ==>
 
-GAA Glu     Dupe            TGG End
-CAT His     Push
+GAA Dupe         END
+
+CAT Push
 AAG 2
+ +
+GAG Dupe
+GGT Move
+GGC Move
 
-GAG Glu     Dupe
-GGT Gly     Move
-GGC Gly     Move
+GCT Modulo
 
-GCT Ala     Modulo
-
-CAT His     Push
+CAT Push
 AAC 1
-GGT Gly     Move
 
-AGT Ser     Jump if <= 0
-GAC "
+GGT Move
 
-GAT Asp     Drop
+AGT Jump if <= 0
+GAC -> *
 
-GAA Glu     Dupe
-TTT Phe     Join
-GGT Gly     Move
-TTA Leu     Plus
+GAT Drop
 
-AAT Asn     Loop
-AAG "
+GAA Dupe
+TTT Join
+GGT Move
+TTA Plus
 
-GAA Glu     Dupe
-GAC Asp     Drop
+AAT Loop
+AAG <- +
 
-GAT Asp     Drop
-TTT Phe     Join
-GAT Asp     Drop
-GGT Gly     Move
-ATT Ile     Minus
+GAA Dupe
+GAC Drop
+ *
+GAT Drop
+TTT Join
+GAT Drop
+GGT Move
+ATT Minus
 
-AGT Ser     Jump if <= 0
-TAG "
+AGT Jump if <= 0
+TAG -> %
 
-CAT His     Push
+CAT Push
 AAA 0
-AAA Lys     Pop
-TAG Stop
 
-CAT His     Push
+AAA Pop
+
+TAG END
+ %
+CAT Push
 AAC 1
-AA
+
+AA  Pop
 ```
 
 ### Truth machine
 
-`ATG GAG AAG AGC ATA AAT` (18 B)
+`ATGGAGAAGAGTATAAAT` (18 B)
 
 Accepts one value as input. If this value is less than or equal to 0, it is
 printed once before the program terminates. If the value is greater than 0, it
 is printed infinitely.
 
 ```
-ATG                         ATA
-GAG Glu     Dupe            TGG Trp     Power
-AAG Lys     Pop             AGA Arg     Unipop
-AGC Ser     Jump if <= 0    AGA Arg     Unipop
-ATA "                       GCA Ala     Modulo
-AAT Asn     Loop            TAA End
+  ATGGAGAAGAGTATAAAT
+     ^            *
+0 ==>DupPop<=0->*Loop>^
++1 Keep_bUniMulEND
 ```
 
 * Execution starts at the initial ATG.

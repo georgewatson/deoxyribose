@@ -7,27 +7,26 @@ https://georgewatson.me
 Released under an MIT licence
 """
 
-# pylint: disable=unused-argument
 # pylint: disable=invalid-name
 
 import sys
 import re
 
 
-def stop(pointer, main_stack, aux_stack):
+def stop(_, main_stack, aux_stack, variables):
     """
     Stop
     Terminate execution.
     """
     if VERBOSE:
-        print("Stop", main_stack, aux_stack)
+        print("Stop", main_stack, aux_stack, variables)
     sys.exit(0)
 
 
 # Charged amino acids: Single-stack operations
 
 
-def his(pointer, main_stack, aux_stack):
+def his(pointer, main_stack, aux_stack, variables):
     """
     His
     Treat next codon as an integer literal in quaternary notation.
@@ -37,10 +36,10 @@ def his(pointer, main_stack, aux_stack):
     if VERBOSE:
         print("His", main_stack, aux_stack, codon)
     main_stack.append(codon_to_int(codon))
-    return(pointer, main_stack, aux_stack)
+    return pointer, main_stack, aux_stack, variables
 
 
-def lys(pointer, main_stack, aux_stack):
+def lys(pointer, main_stack, aux_stack, variables):
     """
     Lys
     If the main stack is non-empty, pop the top element as a number.
@@ -50,10 +49,10 @@ def lys(pointer, main_stack, aux_stack):
     # If the stack is empty, do nothing
     if main_stack:
         print(main_stack.pop())
-    return(pointer, main_stack, aux_stack)
+    return pointer, main_stack, aux_stack, variables
 
 
-def arg(pointer, main_stack, aux_stack):
+def arg(pointer, main_stack, aux_stack, variables):
     """
     Arg
     If the main stack is non-empty, pop the top element.
@@ -70,10 +69,10 @@ def arg(pointer, main_stack, aux_stack):
             # If the value is too large, don't print it
             except (ValueError, OverflowError, UnicodeEncodeError):
                 pass
-    return(pointer, main_stack, aux_stack)
+    return pointer, main_stack, aux_stack, variables
 
 
-def glu(pointer, main_stack, aux_stack):
+def glu(pointer, main_stack, aux_stack, variables):
     """
     Glu
     If the main stack is non-empty, duplicate the top element.
@@ -82,10 +81,10 @@ def glu(pointer, main_stack, aux_stack):
         print("Glu", main_stack, aux_stack)
     if main_stack:
         main_stack.append(main_stack[-1])
-    return(pointer, main_stack, aux_stack)
+    return pointer, main_stack, aux_stack, variables
 
 
-def asp(pointer, main_stack, aux_stack):
+def asp(pointer, main_stack, aux_stack, variables):
     """
     Asp
     If the main stack is non-empty, drop the top element.
@@ -94,13 +93,13 @@ def asp(pointer, main_stack, aux_stack):
         print("Asp", main_stack, aux_stack)
     if main_stack:
         main_stack = main_stack[:-1]
-    return(pointer, main_stack, aux_stack)
+    return pointer, main_stack, aux_stack, variables
 
 
 # Non-polar amino acids: Two-stack operations
 
 
-def leu(pointer, main_stack, aux_stack):
+def leu(pointer, main_stack, aux_stack, variables):
     """
     Leu
     Add the top elements of each stack.
@@ -119,10 +118,10 @@ def leu(pointer, main_stack, aux_stack):
     else:
         b = 0
     main_stack.append(a + b)
-    return(pointer, main_stack, aux_stack)
+    return pointer, main_stack, aux_stack, variables
 
 
-def ile(pointer, main_stack, aux_stack):
+def ile(pointer, main_stack, aux_stack, variables):
     """
     Ile
     Subtract the top of the aux stack from the top of the main stack.
@@ -141,10 +140,10 @@ def ile(pointer, main_stack, aux_stack):
     else:
         b = 0
     main_stack.append(a - b)
-    return(pointer, main_stack, aux_stack)
+    return pointer, main_stack, aux_stack, variables
 
 
-def val(pointer, main_stack, aux_stack):
+def val(pointer, main_stack, aux_stack, variables):
     """
     Val
     Multiply the top elements of the two stacks.
@@ -163,10 +162,10 @@ def val(pointer, main_stack, aux_stack):
     else:
         b = 1
     main_stack.append(a * b)
-    return(pointer, main_stack, aux_stack)
+    return pointer, main_stack, aux_stack, variables
 
 
-def pro(pointer, main_stack, aux_stack):
+def pro(pointer, main_stack, aux_stack, variables):
     """
     Pro
     Divide the top of the main stack by the top of the aux stack.
@@ -192,30 +191,26 @@ def pro(pointer, main_stack, aux_stack):
         main_stack.append(a // b)
     except ZeroDivisionError:
         main_stack.append(a)
-    return(pointer, main_stack, aux_stack)
+    return pointer, main_stack, aux_stack, variables
 
 
-def met(pointer, main_stack, aux_stack):
+def met(pointer, main_stack, aux_stack, variables):
     """
     Met
-    Swap the top elements of the two stacks.
-    Gracefully handles empty stacks.
+    Move the value of the variable named by the next codon to the top of the
+    main stack.
+    If the variable does not exist, do nothing.
     """
+    variable_name, pointer = read_next_codon(pointer)
     if VERBOSE:
-        print("Met", main_stack, aux_stack)
-    # If either list is empty, just move one way
-    # If both are empty, do nothing
-    a = None
-    if main_stack:
-        a = main_stack.pop()
-    if aux_stack:
-        main_stack.append(aux_stack.pop())
-    if a is not None:
-        aux_stack.append(a)
-    return(pointer, main_stack, aux_stack)
+        print("Met", main_stack, aux_stack, variable_name, variables)
+    if variable_name in variables:
+        main_stack.append(variables[variable_name])
+        del variables[variable_name]
+    return pointer, main_stack, aux_stack, variables
 
 
-def phe(pointer, main_stack, aux_stack):
+def phe(pointer, main_stack, aux_stack, variables):
     """
     Phe
     Put aux stack on top of main stack, preserving its order
@@ -224,10 +219,10 @@ def phe(pointer, main_stack, aux_stack):
         print("Phe", main_stack, aux_stack)
     main_stack += aux_stack
     aux_stack = []
-    return(pointer, main_stack, aux_stack)
+    return pointer, main_stack, aux_stack, variables
 
 
-def gly(pointer, main_stack, aux_stack):
+def gly(pointer, main_stack, aux_stack, variables):
     """
     Gly
     If the main stack is non-empty, move the top element to the aux stack.
@@ -236,36 +231,28 @@ def gly(pointer, main_stack, aux_stack):
         print("Gly", main_stack, aux_stack)
     if main_stack:
         aux_stack.append(main_stack.pop())
-    return(pointer, main_stack, aux_stack)
+    return pointer, main_stack, aux_stack, variables
 
 
-def trp(pointer, main_stack, aux_stack):
+def trp(pointer, main_stack, aux_stack, variables):
     """
     Trp
-    Take the top element of the main stack to the power of the top element of
-    the auxiliary stack.
-    If either stack is empty, treat it as zero.
+    Move the top element of the main stack to a variable named by the next
+    codon.
+    The destination is overwritten.
+    If the main stack is empty, the destination becomes empty.
     """
+    variable_name, pointer = read_next_codon(pointer)
     if VERBOSE:
-        print("Trp", main_stack, aux_stack)
+        print("Trp", main_stack, aux_stack, variable_name, variables)
     if main_stack:
-        a = main_stack.pop()
+        variables[variable_name] = main_stack.pop()
     else:
-        a = 0
-    if aux_stack:
-        b = aux_stack.pop()
-    else:
-        b = 0
-    # If trying to raise 0 to a negative power, act as a no-op
-    if (a != 0 or b >= 0):
-        try:
-            main_stack.append(a ** b)
-        except OverflowError:
-            pass
-    return(pointer, main_stack, aux_stack)
+        del variables[variable_name]
+    return pointer, main_stack, aux_stack, variables
 
 
-def ala(pointer, main_stack, aux_stack):
+def ala(pointer, main_stack, aux_stack, variables):
     """
     Ala
     Calculate main top modulo aux top.
@@ -288,13 +275,13 @@ def ala(pointer, main_stack, aux_stack):
         main_stack.append(a % b)
     except ZeroDivisionError:
         pass
-    return(pointer, main_stack, aux_stack)
+    return pointer, main_stack, aux_stack, variables
 
 
 # Polar amino acids: Flow control
 
 
-def ser(pointer, main_stack, aux_stack):
+def ser(pointer, main_stack, aux_stack, variables):
     """
     Ser
     If the top element of the main stack is <= 0, jump to next occurrence of
@@ -310,10 +297,10 @@ def ser(pointer, main_stack, aux_stack):
             results.append(result - pointer)
         if results:
             pointer += min(results) + 1
-    return(pointer, main_stack, aux_stack)
+    return pointer, main_stack, aux_stack, variables
 
 
-def thr(pointer, main_stack, aux_stack):
+def thr(pointer, main_stack, aux_stack, variables):
     """
     Thr
     If the top element of the main stack is <= 0, jump back to previous
@@ -333,10 +320,10 @@ def thr(pointer, main_stack, aux_stack):
             pointer -= min(results) - 1
         else:
             pointer += 3
-    return(pointer, main_stack, aux_stack)
+    return pointer, main_stack, aux_stack, variables
 
 
-def tyr(pointer, main_stack, aux_stack):
+def tyr(pointer, main_stack, aux_stack, variables):
     """
     Tyr
     If main stack is empty, jump to next occurrence of the following codon.
@@ -351,10 +338,10 @@ def tyr(pointer, main_stack, aux_stack):
             results.append(result - pointer)
         if results:
             pointer += min(results) + 1
-    return(pointer, main_stack, aux_stack)
+    return pointer, main_stack, aux_stack, variables
 
 
-def gln(pointer, main_stack, aux_stack):
+def gln(pointer, main_stack, aux_stack, variables):
     """
     Gln
     If the main stack is empty, jump back to previous occurrence of the
@@ -374,10 +361,10 @@ def gln(pointer, main_stack, aux_stack):
             pointer -= min(results) - 1
         else:
             pointer += 3
-    return(pointer, main_stack, aux_stack)
+    return pointer, main_stack, aux_stack, variables
 
 
-def asn(pointer, main_stack, aux_stack):
+def asn(pointer, main_stack, aux_stack, variables):
     """
     Asn
     Unconditionally jump to previous occurrence of the next codon.
@@ -395,10 +382,10 @@ def asn(pointer, main_stack, aux_stack):
         pointer -= min(results) - 1
     else:
         pointer += 3
-    return(pointer, main_stack, aux_stack)
+    return pointer, main_stack, aux_stack, variables
 
 
-def cys(pointer, main_stack, aux_stack):
+def cys(pointer, main_stack, aux_stack, variables):
     """
     Cys
     Unconditionally jump to next occurrence of the next codon.
@@ -412,7 +399,7 @@ def cys(pointer, main_stack, aux_stack):
         results.append(result - pointer)
     if results:
         pointer += min(results) + 1
-    return(pointer, main_stack, aux_stack)
+    return pointer, main_stack, aux_stack, variables
 
 
 # Helper functions
@@ -447,7 +434,7 @@ def read_next_codon(pointer):
     for _ in range(3):
         codon += CHROMOSOME[pointer % len(CHROMOSOME)].lower()
         pointer += 1
-    return(codon, pointer)
+    return codon, pointer
 
 
 def look_ahead(pointer, search_term):
@@ -461,9 +448,9 @@ def look_ahead(pointer, search_term):
         if (CHROMOSOME[pointer % len(CHROMOSOME)] == search_term[2] and
                 CHROMOSOME[(pointer-1) % len(CHROMOSOME)] == search_term[1] and
                 CHROMOSOME[(pointer-2) % len(CHROMOSOME)] == search_term[0]):
-            return(pointer, True)
+            return pointer, True
         pointer += 1
-    return(pointer, False)
+    return pointer, False
 
 
 def look_back(pointer, search_term):
@@ -477,9 +464,9 @@ def look_back(pointer, search_term):
         if (CHROMOSOME[pointer % len(CHROMOSOME)] == search_term[2] and
                 CHROMOSOME[(pointer-1) % len(CHROMOSOME)] == search_term[1] and
                 CHROMOSOME[(pointer-2) % len(CHROMOSOME)] == search_term[0]):
-            return(pointer, True)
+            return pointer, True
         pointer -= 1
-    return(pointer, False)
+    return pointer, False
 
 
 # Define genetic code table
@@ -587,6 +574,7 @@ def main():
 
     main_stack = []
     aux_stack = []
+    variables = {}
     in_gene = False
 
     # Push additional command line arguments to the stack
@@ -615,8 +603,9 @@ def main():
             # Do we know what this codon does?
             if codon in GENETIC_CODE:
                 # If so, run the amino acid function
-                pointer, main_stack, aux_stack = GENETIC_CODE[codon](
-                    pointer, main_stack, aux_stack)
+                pointer, main_stack, aux_stack, variables = \
+                    GENETIC_CODE[codon](pointer, main_stack, aux_stack,
+                                        variables)
         else:
             # If not, look for a start codon
             # If we can't find one, loop forever. This is deliberate.
@@ -632,7 +621,7 @@ if len(sys.argv) > 1:
 else:
     # If no program was specified as an argument, accept from standard input
     while True:
-        USER_INPUT = ''.join([i for i in sys.stdin])
+        USER_INPUT = ''.join(i for i in sys.stdin)
         CHROMOSOME = re.sub(r'[^acgt]', '', USER_INPUT.lower())
 
 # Run interpreter
