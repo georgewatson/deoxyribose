@@ -325,10 +325,8 @@ def thr(pointer, main_stack, aux_stack):
     if main_stack and (main_stack[-1] <= 0):
         results = []
         result, success = look_back(pointer, term)
-
         if success:
             results.append(pointer - result)
-
         if results:
             pointer -= min(results) - 1
         else:
@@ -366,10 +364,8 @@ def gln(pointer, main_stack, aux_stack):
     if not main_stack:
         results = []
         result, success = look_back(pointer, term)
-
         if success:
             results.append(pointer - result)
-
         if results:
             pointer -= min(results) - 1
         else:
@@ -387,10 +383,8 @@ def asn(pointer, main_stack, aux_stack):
         print("Asn", main_stack, aux_stack, term)
     results = []
     result, success = look_back(pointer, term)
-
     if success:
         results.append(pointer - result)
-
     if results:
         pointer -= min(results) - 1
     else:
@@ -435,7 +429,6 @@ def codon_to_int(codon):
             value += 2 * (4**i)
         elif char == 't':
             value += 3 * (4**i)
-
     return value
 
 
@@ -600,28 +593,26 @@ def main():
             for char in element:
                 main_stack.append(ord(char))
 
-    # Start at the beginning
-    pointer = 0
+    # Look for a start codon
+    pointer, in_gene = look_ahead(0, 'atg')
+
+    # If we can't find one, start at the beginning
+    if in_gene:
+        pointer += 1
+    else:
+        pointer, in_gene = 0, True
 
     # Loop indefinitely (or until a stop codon)
     while True:
-        # Are we in a gene currently?
-        if in_gene:
-            # If so, read the next codon
-            codon, pointer = read_next_codon(pointer)
-            if VERBOSE:
-                print(codon)
+        codon, pointer = read_next_codon(pointer)
+        if VERBOSE:
+            print(codon)
 
-            # Do we know what this codon does?
-            if codon in GENETIC_CODE:
-                # If so, run the amino acid function
-                pointer, main_stack, aux_stack = GENETIC_CODE[codon](
-                    pointer, main_stack, aux_stack)
-        else:
-            # If not, look for a start codon
-            # If we can't find one, loop forever. This is deliberate.
-            pointer, in_gene = look_ahead(pointer, 'atg')
-            pointer += 1
+        # Do we know what this codon does?
+        if codon in GENETIC_CODE:
+            # If so, run the amino acid function
+            pointer, main_stack, aux_stack = \
+                GENETIC_CODE[codon](pointer, main_stack, aux_stack)
 
 
 VERBOSE = False
@@ -632,7 +623,7 @@ if len(sys.argv) > 1:
 else:
     # If no program was specified as an argument, accept from standard input
     while True:
-        USER_INPUT = ''.join([i for i in sys.stdin])
+        USER_INPUT = ''.join(sys.stdin)
         CHROMOSOME = re.sub(r'[^acgt]', '', USER_INPUT.lower())
 
 # Run interpreter
